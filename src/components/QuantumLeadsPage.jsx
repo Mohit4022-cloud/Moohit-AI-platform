@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Search, Plus, Download, Upload, Star, Filter, ChevronDown, ChevronRight, 
   Brain, Zap, Phone, Mail, MessageSquare, Calendar, Clock, TrendingUp, 
   AlertCircle, CheckCircle, Target, Users, Activity, Sparkles, Command,
   BarChart3, Eye, EyeOff, Mic, Volume2, Settings, Share2, BookOpen,
   PieChart, Layers, Timer, Award, Shield, RefreshCw, GitBranch,
-  Headphones, Video, Globe, Linkedin, Twitter, ArrowUpRight, ArrowDownRight
+  Headphones, Video, Globe, Linkedin, Twitter, ArrowUpRight, ArrowDownRight,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart as RePieChart, 
@@ -643,6 +645,7 @@ const AdvancedFilters = ({ onApply, isOpen }) => {
 
 // Main Leads Page Component
 export default function QuantumLeadsPage() {
+  const navigate = useNavigate();
   const [leads, setLeads] = useState([
     {
       id: 1,
@@ -785,9 +788,18 @@ export default function QuantumLeadsPage() {
       {/* Header */}
       <header className="leads-header">
         <div className="header-content">
-          <div className="header-text">
-            <h1 className="page-title">Leads</h1>
-            <p className="page-subtitle">Manage your inbound leads with AI-powered insights</p>
+          <div className="header-left">
+            <button 
+              className="back-button"
+              onClick={() => navigate('/dashboard')}
+              title="Back to Dashboard"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div className="header-text">
+              <h1 className="page-title">Leads</h1>
+              <p className="page-subtitle">Manage your inbound leads with AI-powered insights</p>
+            </div>
           </div>
           
           <div className="header-actions">
@@ -1111,6 +1123,32 @@ export default function QuantumLeadsPage() {
           justify-content: space-between;
           max-width: 1600px;
           margin: 0 auto;
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+        }
+
+        .back-button {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.7);
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-button:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: white;
+          transform: translateX(-2px);
         }
 
         .page-title {

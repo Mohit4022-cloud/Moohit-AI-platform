@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, Radio, MessageSquare, TrendingUp, Settings, Sparkles, Phone, Mail, Clock, ChevronRight, Activity, Target, Zap, Brain, Eye, Mic, Command, AlertCircle, CheckCircle, ArrowUp, ArrowDown, TrendingDown, Calendar, Shield, Headphones, Volume2, Keyboard } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
@@ -535,6 +536,7 @@ const CognitiveLoadIndicator = ({ load, state }) => {
 
 // Main Enhanced Dashboard
 export default function QuantumDashboard() {
+  const navigate = useNavigate();
   const { cognitiveLoad, emotionalState, userContext, adaptiveStyles, setEmotionalState, aiEngine } = useNeuroResponsive();
   const [selectedNav, setSelectedNav] = useState('dashboard');
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
@@ -685,7 +687,12 @@ export default function QuantumDashboard() {
               <button
                 key={item.id}
                 className={`nav-item ${selectedNav === item.id ? 'active' : ''}`}
-                onClick={() => setSelectedNav(item.id)}
+                onClick={() => {
+                  setSelectedNav(item.id);
+                  if (item.id === 'leads') {
+                    navigate('/leads');
+                  }
+                }}
               >
                 <Icon size={20} />
                 <span>{item.label}</span>
