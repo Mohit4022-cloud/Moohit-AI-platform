@@ -693,6 +693,10 @@ export default function QuantumDashboard() {
                     navigate('/leads');
                   } else if (item.id === 'conversations') {
                     navigate('/conversations');
+                  } else if (item.id === 'campaigns') {
+                    navigate('/campaigns');
+                  } else if (item.id === 'analytics') {
+                    navigate('/analytics');
                   }
                 }}
               >

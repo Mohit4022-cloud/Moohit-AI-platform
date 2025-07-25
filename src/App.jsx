@@ -4,6 +4,7 @@ import QuantumDashboard from './components/QuantumDashboard'
 import QuantumLeadsPage from './components/QuantumLeadsPage'
 import QuantumConversations from './components/QuantumConversations'
 import QuantumAnalytics from './components/QuantumAnalytics'
+import QuantumCampaigns from './components/QuantumCampaigns'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/leads" element={<QuantumLeadsPage />} />
         <Route path="/conversations" element={<QuantumConversations />} />
         <Route path="/analytics" element={<QuantumAnalytics />} />
+        <Route path="/campaigns" element={<QuantumCampaigns />} />
       </Routes>
     </Router>
   )
