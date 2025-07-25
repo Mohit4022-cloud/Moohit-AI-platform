@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   MessageSquare, Phone, Mail, Search, Plus, Filter, ChevronRight, ChevronDown,
   Brain, Sparkles, Activity, TrendingUp, Clock, Users, Star, Award, Target,
@@ -761,6 +762,7 @@ const ConversationAnalytics = ({ conversations }) => {
 
 // Main Conversations Component
 export default function QuantumConversations() {
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState([
     {
       id: 1,
@@ -901,8 +903,17 @@ export default function QuantumConversations() {
       {/* Header */}
       <header className="conversations-header">
         <div className="header-content">
-          <h1 className="page-title">Conversations</h1>
-          <p className="page-subtitle">Manage all your customer conversations</p>
+          <button 
+            className="back-button"
+            onClick={() => navigate('/dashboard')}
+            title="Back to Dashboard"
+          >
+            ←
+          </button>
+          <div>
+            <h1 className="page-title">Conversations</h1>
+            <p className="page-subtitle">Manage all your customer conversations</p>
+          </div>
         </div>
 
         <div className="header-actions">
@@ -1073,6 +1084,33 @@ export default function QuantumConversations() {
           display: flex;
           align-items: center;
           justify-content: space-between;
+        }
+
+        .header-content {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+        }
+
+        .back-button {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 1.25rem;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-button:hover {
+          background: rgba(255, 255, 255, 0.08);
+          transform: translateX(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .page-title {

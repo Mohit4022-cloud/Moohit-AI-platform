@@ -691,6 +691,8 @@ export default function QuantumDashboard() {
                   setSelectedNav(item.id);
                   if (item.id === 'leads') {
                     navigate('/leads');
+                  } else if (item.id === 'conversations') {
+                    navigate('/conversations');
                   }
                 }}
               >
