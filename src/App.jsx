@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import QuantumLogin from './components/QuantumLogin'
 import QuantumDashboard from './components/QuantumDashboard'
 import QuantumLeadsPage from './components/QuantumLeadsPage'
 import QuantumConversations from './components/QuantumConversations'
@@ -7,17 +8,48 @@ import QuantumAnalytics from './components/QuantumAnalytics'
 import QuantumCampaigns from './components/QuantumCampaigns'
 import QuantumSettings from './components/QuantumSettings'
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
+  return isAuthenticated ? children : <Navigate to="/login" replace />
+}
+
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<QuantumDashboard />} />
-        <Route path="/leads" element={<QuantumLeadsPage />} />
-        <Route path="/conversations" element={<QuantumConversations />} />
-        <Route path="/analytics" element={<QuantumAnalytics />} />
-        <Route path="/campaigns" element={<QuantumCampaigns />} />
-        <Route path="/settings" element={<QuantumSettings />} />
+        <Route path="/login" element={<QuantumLogin />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <QuantumDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/leads" element={
+          <ProtectedRoute>
+            <QuantumLeadsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/conversations" element={
+          <ProtectedRoute>
+            <QuantumConversations />
+          </ProtectedRoute>
+        } />
+        <Route path="/analytics" element={
+          <ProtectedRoute>
+            <QuantumAnalytics />
+          </ProtectedRoute>
+        } />
+        <Route path="/campaigns" element={
+          <ProtectedRoute>
+            <QuantumCampaigns />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <QuantumSettings />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   )

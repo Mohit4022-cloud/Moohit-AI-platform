@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, Radio, MessageSquare, TrendingUp, Settings, Sparkles, Phone, Mail, Clock, ChevronRight, Activity, Target, Zap, Brain, Eye, Mic, Command, AlertCircle, CheckCircle, ArrowUp, ArrowDown, TrendingDown, Calendar, Shield, Headphones, Volume2, Keyboard } from 'lucide-react';
+import { BarChart3, Users, Radio, MessageSquare, TrendingUp, Settings, Sparkles, Phone, Mail, Clock, ChevronRight, Activity, Target, Zap, Brain, Eye, Mic, Command, AlertCircle, CheckCircle, ArrowUp, ArrowDown, TrendingDown, Calendar, Shield, Headphones, Volume2, Keyboard, LogOut } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 // Enhanced Quantum Constants
@@ -543,7 +543,20 @@ export default function QuantumDashboard() {
   const [aiInsights, setAiInsights] = useState(null);
   const [focusMode, setFocusMode] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showUserDropdown && !e.target.closest('.user-menu')) {
+        setShowUserDropdown(false);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showUserDropdown]);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -757,12 +770,41 @@ export default function QuantumDashboard() {
               <span className="notification-dot"></span>
             </button>
             
-            <div className="user-menu">
-              <div className="user-avatar">MA</div>
+            <div className="user-menu" style={{ position: 'relative' }}>
+              <div 
+                className="user-avatar" 
+                style={{ cursor: 'pointer' }}
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+              >
+                MA
+              </div>
               <div className="user-status">
                 <div className="status-dot"></div>
                 <span>Active</span>
               </div>
+              
+              {showUserDropdown && (
+                <div className="user-dropdown">
+                  <button 
+                    className="dropdown-item"
+                    onClick={() => navigate('/settings')}
+                  >
+                    <Settings size={16} />
+                    Settings
+                  </button>
+                  <div className="dropdown-divider"></div>
+                  <button 
+                    className="dropdown-item logout"
+                    onClick={() => {
+                      localStorage.removeItem('isAuthenticated');
+                      navigate('/login');
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -1651,6 +1693,67 @@ export default function QuantumDashboard() {
           background: #10b981;
           border-radius: 50%;
           animation: statusPulse 2s ease-in-out infinite;
+        }
+        
+        /* User Dropdown */
+        .user-dropdown {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          margin-top: 0.5rem;
+          background: rgba(26, 26, 46, 0.98);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+          z-index: 1000;
+          min-width: 200px;
+          animation: dropdownSlide 0.2s ease-out;
+        }
+        
+        @keyframes dropdownSlide {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .dropdown-item {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          background: transparent;
+          border: none;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-align: left;
+        }
+        
+        .dropdown-item:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+        }
+        
+        .dropdown-item.logout {
+          color: #ef4444;
+        }
+        
+        .dropdown-item.logout:hover {
+          background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .dropdown-divider {
+          height: 1px;
+          background: rgba(255, 255, 255, 0.1);
+          margin: 0.25rem 0;
         }
 
         /* Dashboard Content */
