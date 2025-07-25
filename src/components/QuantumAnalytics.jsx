@@ -16,6 +16,7 @@ import {
   PolarRadiusAxis, Radar, ComposedChart, Scatter, ScatterChart, Treemap,
   Sankey, Funnel, FunnelChart, RadialBarChart, RadialBar
 } from 'recharts';
+import './QuantumAnalytics.css';
 
 // Quantum Constants
 const QUANTUM_CONSTANTS = {
