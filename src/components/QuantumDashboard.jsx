@@ -697,6 +697,8 @@ export default function QuantumDashboard() {
                     navigate('/campaigns');
                   } else if (item.id === 'analytics') {
                     navigate('/analytics');
+                  } else if (item.id === 'settings') {
+                    navigate('/settings');
                   }
                 }}
               >
