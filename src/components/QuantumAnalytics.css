@@ -199,7 +199,9 @@
 .analytics-main-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
+  height: calc(100vh - 200px);
 }
 
 /* Key Metrics */
@@ -398,6 +400,7 @@
   padding: 1.5rem 2rem;
   position: relative;
   z-index: 1;
+  min-height: 0;
 }
 
 /* AI Insights Panel */

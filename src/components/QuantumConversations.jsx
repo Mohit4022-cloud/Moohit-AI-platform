@@ -1172,7 +1172,9 @@ export default function QuantumConversations() {
         .conversations-main-content {
           flex: 1;
           overflow-y: auto;
+          overflow-x: hidden;
           position: relative;
+          height: calc(100vh - 90px);
         }
 
         .conversations-container {
@@ -1184,6 +1186,7 @@ export default function QuantumConversations() {
           margin: 0 auto;
           position: relative;
           z-index: 1;
+          height: 100%;
         }
 
         /* Conversations Panel */
@@ -1193,6 +1196,9 @@ export default function QuantumConversations() {
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 12px;
           overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
 
         .panel-header {
@@ -1367,7 +1373,7 @@ export default function QuantumConversations() {
         /* Conversations List */
         .conversations-list {
           padding: 1rem;
-          max-height: calc(100vh - 400px);
+          max-height: 100%;
           overflow-y: auto;
         }
 
