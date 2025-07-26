@@ -258,20 +258,21 @@ export default function QuantumAnalyticsFixed() {
       {/* Header */}
       <header className="analytics-header">
         <div className="header-content">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/dashboard')}
-            title="Back to Dashboard"
-          >
-            ←
-          </button>
-          <div>
-            <h1 className="page-title">Analytics</h1>
-            <p className="page-subtitle">Comprehensive performance insights and custom reporting</p>
+          <div className="header-left">
+            <button 
+              className="back-button"
+              onClick={() => navigate('/dashboard')}
+              title="Back to Dashboard"
+            >
+              ←
+            </button>
+            <div>
+              <h1 className="page-title">Analytics</h1>
+              <p className="page-subtitle">Comprehensive performance insights and custom reporting</p>
+            </div>
           </div>
-        </div>
 
-        <div className="header-controls">
+          <div className="header-controls">
           <button className="date-range-btn">
             <Calendar size={16} />
             {timeRange}
@@ -304,8 +305,10 @@ export default function QuantumAnalyticsFixed() {
         </div>
       </header>
 
-      {/* Key Metrics */}
-      <section className="key-metrics">
+      {/* Main Content Wrapper */}
+      <div className="analytics-main-content">
+        {/* Key Metrics */}
+        <section className="key-metrics">
         <QuantumMetricCard
           icon={Clock}
           title="Avg Response Time"
@@ -412,6 +415,7 @@ export default function QuantumAnalyticsFixed() {
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

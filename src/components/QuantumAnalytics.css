@@ -7,6 +7,8 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   position: relative;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Quantum Background */
@@ -91,10 +93,17 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .header-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.header-left {
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -184,6 +193,13 @@
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Main Content Wrapper */
+.analytics-main-content {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
 }
 
 /* Key Metrics */
@@ -336,9 +352,6 @@
   padding: 0 2rem;
   background: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 20;
   backdrop-filter: blur(10px);
 }
 

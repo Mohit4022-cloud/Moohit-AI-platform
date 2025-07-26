@@ -904,20 +904,21 @@ export default function QuantumConversations() {
       <header className="conversations-header">
         <div className="header-wrapper">
           <div className="header-content">
-            <button 
-              className="back-button"
-              onClick={() => navigate('/dashboard')}
-              title="Back to Dashboard"
-            >
-              ←
-            </button>
-            <div>
-              <h1 className="page-title">Conversations</h1>
-              <p className="page-subtitle">Manage all your customer conversations</p>
+            <div className="header-left">
+              <button 
+                className="back-button"
+                onClick={() => navigate('/dashboard')}
+                title="Back to Dashboard"
+              >
+                ←
+              </button>
+              <div>
+                <h1 className="page-title">Conversations</h1>
+                <p className="page-subtitle">Manage all your customer conversations</p>
+              </div>
             </div>
-          </div>
 
-          <div className="header-actions">
+            <div className="header-actions">
             <button className="manage-channels-btn">
               <Settings size={16} />
               Manage Channels
@@ -927,7 +928,8 @@ export default function QuantumConversations() {
       </header>
 
       {/* Main Content */}
-      <div className="conversations-container">
+      <div className="conversations-main-content">
+        <div className="conversations-container">
         {/* Left Panel - Conversations List */}
         <div className="conversations-panel">
           <div className="panel-header">
@@ -1006,6 +1008,8 @@ export default function QuantumConversations() {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           position: relative;
           overflow-x: hidden;
+          display: flex;
+          flex-direction: column;
         }
 
         /* Quantum Background */
@@ -1095,6 +1099,13 @@ export default function QuantumConversations() {
         }
 
         .header-content {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .header-left {
           display: flex;
           align-items: center;
           gap: 1.5rem;
@@ -1157,6 +1168,12 @@ export default function QuantumConversations() {
         }
 
         /* Main Container */
+        .conversations-main-content {
+          flex: 1;
+          overflow-y: auto;
+          position: relative;
+        }
+
         .conversations-container {
           display: grid;
           grid-template-columns: 1fr 400px;
@@ -2052,6 +2069,7 @@ export default function QuantumConversations() {
           }
         }
       `}</style>
+      </div>
     </div>
   );
 }
