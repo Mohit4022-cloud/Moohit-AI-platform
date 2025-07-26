@@ -2411,28 +2411,60 @@ export default function QuantumDashboard() {
         /* Electric Icon Effect */
         .icon-electric {
           position: relative;
+          animation: iconPulse 2s ease-in-out infinite;
+        }
+        
+        .icon-electric::before {
+          content: '';
+          position: absolute;
+          inset: -8px;
+          border-radius: 50%;
+          background: radial-gradient(
+            circle,
+            transparent 30%,
+            currentColor 35%,
+            transparent 40%,
+            transparent 60%,
+            currentColor 65%,
+            transparent 70%
+          );
+          opacity: 0;
+          animation: electricPulse 2s ease-in-out infinite;
         }
         
         .icon-electric::after {
           content: '';
           position: absolute;
           inset: -4px;
-          border-radius: 20px;
+          border-radius: 50%;
           background: conic-gradient(
             from 0deg,
             transparent,
-            currentColor,
-            transparent,
-            currentColor,
+            currentColor 10%,
+            transparent 20%,
+            transparent 80%,
+            currentColor 90%,
             transparent
           );
-          opacity: 0.3;
+          opacity: 0.4;
           animation: electricRotate 3s linear infinite;
+          filter: blur(2px);
         }
         
         @keyframes electricRotate {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        
+        @keyframes electricPulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 0.3;
+          }
         }
         
         /* Neural Icon Effect */
