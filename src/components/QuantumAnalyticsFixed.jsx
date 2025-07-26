@@ -302,6 +302,7 @@ export default function QuantumAnalyticsFixed() {
               </>
             )}
           </button>
+          </div>
         </div>
       </header>
 
