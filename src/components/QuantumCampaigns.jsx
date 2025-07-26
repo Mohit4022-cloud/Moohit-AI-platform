@@ -258,7 +258,7 @@ export default function QuantumCampaigns() {
   }), [campaigns]);
 
   const handleCampaignAction = (action, campaign) => {
-    console.log(`Action: ${action}`, campaign);
+    // Action handler for campaign actions
     if (action === 'analytics') {
       setSelectedCampaign(campaign);
       // Navigate to detailed analytics

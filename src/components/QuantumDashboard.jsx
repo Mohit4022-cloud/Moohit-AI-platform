@@ -642,7 +642,7 @@ export default function QuantumDashboard() {
   ];
   
   const handleCommand = (command) => {
-    console.log('Executing command:', command);
+    // Execute command logic
     // Handle different commands
     if (command.id === 'focus-mode') {
       setFocusMode(true);
@@ -652,11 +652,11 @@ export default function QuantumDashboard() {
   };
   
   const handleVoiceCommand = (command) => {
-    console.log('Voice command:', command);
+    // Handle voice command
   };
   
   const handleAIAction = (action) => {
-    console.log('AI action:', action);
+    // Handle AI action
   };
   
   const navItems = [
