@@ -14,6 +14,7 @@ import {
   ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, RadialBarChart,
   RadialBar, Scatter, ScatterChart, ComposedChart
 } from 'recharts';
+import './QuantumLiveQueue.css';
 
 // Quantum Constants
 const QUANTUM_CONSTANTS = {
@@ -996,6 +997,11 @@ export default function QuantumLiveQueue() {
         onClose={() => setShowEscalationRules(false)}
       />
 
+    </div>
+  );
+}
+
+/* REMOVING STYLED JSX - USE CSS FILE INSTEAD
       <style jsx>{`
         .quantum-live-queue {
           min-height: 100vh;
@@ -2315,3 +2321,4 @@ export default function QuantumLiveQueue() {
     </div>
   );
 }
+*/

@@ -7,11 +7,13 @@ import QuantumConversations from './components/QuantumConversations'
 import QuantumAnalytics from './components/QuantumAnalytics'
 import QuantumCampaigns from './components/QuantumCampaigns'
 import QuantumSettings from './components/QuantumSettings'
+import QuantumLiveQueue from './components/QuantumLiveQueueFixed'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
-  return isAuthenticated ? children : <Navigate to="/login" replace />
+  const isDemoMode = localStorage.getItem('isDemoMode') === 'true'
+  return (isAuthenticated || isDemoMode) ? children : <Navigate to="/login" replace />
 }
 
 function App() {
@@ -48,6 +50,11 @@ function App() {
         <Route path="/settings" element={
           <ProtectedRoute>
             <QuantumSettings />
+          </ProtectedRoute>
+        } />
+        <Route path="/live-queue" element={
+          <ProtectedRoute>
+            <QuantumLiveQueue />
           </ProtectedRoute>
         } />
       </Routes>

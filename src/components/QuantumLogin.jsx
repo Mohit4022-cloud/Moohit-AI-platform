@@ -91,6 +91,7 @@ export default function QuantumLogin() {
 
   // Explore demo
   const exploreDemo = () => {
+    localStorage.setItem('isDemoMode', 'true');
     navigate('/dashboard');
   };
 

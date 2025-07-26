@@ -14,7 +14,7 @@ import {
   PieChart as RePieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, 
   CartesianGrid, Tooltip, Legend, RadarChart, PolarGrid, PolarAngleAxis, 
   PolarRadiusAxis, Radar, ComposedChart, Scatter, ScatterChart, Treemap,
-  Sankey, Funnel, FunnelChart, RadialBarChart, RadialBar
+  RadialBarChart, RadialBar
 } from 'recharts';
 import './QuantumAnalytics.css';
 
