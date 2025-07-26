@@ -1174,7 +1174,6 @@ export default function QuantumConversations() {
           overflow-y: auto;
           overflow-x: hidden;
           position: relative;
-          height: calc(100vh - 90px);
         }
 
         .conversations-container {
@@ -1373,8 +1372,6 @@ export default function QuantumConversations() {
         /* Conversations List */
         .conversations-list {
           padding: 1rem;
-          max-height: 100%;
-          overflow-y: auto;
         }
 
         .conversations-list::-webkit-scrollbar {

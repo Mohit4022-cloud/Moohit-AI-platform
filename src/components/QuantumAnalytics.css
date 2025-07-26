@@ -6,7 +6,6 @@
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   position: relative;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -201,7 +200,6 @@
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
-  height: calc(100vh - 200px);
 }
 
 /* Key Metrics */
