@@ -416,7 +416,6 @@ export default function QuantumAnalyticsFixed() {
           </div>
         </div>
       </div>
-      </div>
     </div>
   );
 }
