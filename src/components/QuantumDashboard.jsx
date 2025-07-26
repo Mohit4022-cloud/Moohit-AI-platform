@@ -307,8 +307,18 @@ const AIInsightCard = ({ insights, onAction }) => {
 };
 
 // Smart Metric Card with Predictions
-const SmartMetricCard = ({ icon: Icon, value, label, change, color, trend, prediction, context }) => {
+const SmartMetricCard = ({ icon: Icon, value, label, change, color, trend, prediction, context, iconModifier }) => {
   const [showDetails, setShowDetails] = useState(false);
+  
+  const getIconClass = () => {
+    const modifiers = {
+      pulse: 'icon-pulse',
+      electric: 'icon-electric',
+      neural: 'icon-neural',
+      quantum: 'icon-quantum'
+    };
+    return modifiers[iconModifier] || '';
+  };
   
   return (
     <div 
@@ -317,8 +327,18 @@ const SmartMetricCard = ({ icon: Icon, value, label, change, color, trend, predi
       onMouseLeave={() => setShowDetails(false)}
     >
       <div className="metric-main">
-        <div className="metric-icon" style={{ backgroundColor: `hsla(${color}, 70%, 50%, 0.1)` }}>
+        <div className={`metric-icon ${getIconClass()}`} style={{ backgroundColor: `hsla(${color}, 70%, 50%, 0.1)` }}>
           <Icon size={24} style={{ color: `hsl(${color}, 70%, 50%)` }} />
+          {iconModifier === 'neural' && (
+            <div className="icon-overlay">
+              <Activity size={16} className="icon-secondary" />
+            </div>
+          )}
+          {iconModifier === 'quantum' && (
+            <div className="icon-particles">
+              <span></span><span></span><span></span>
+            </div>
+          )}
         </div>
         <div className="metric-content">
           <div className="metric-value">
@@ -845,7 +865,7 @@ export default function QuantumDashboard() {
 
             <div className="metrics-grid">
               <SmartMetricCard
-                icon={Clock}
+                icon={Activity}
                 value="47s"
                 label="AVG RESPONSE TIME"
                 change="-23% vs last week"
@@ -857,11 +877,12 @@ export default function QuantumDashboard() {
                   prediction: '42s by EOD',
                   suggestion: 'Enable auto-response for FAQs'
                 }}
+                iconModifier="pulse"
               />
               <SmartMetricCard
-                icon={Users}
+                icon={Zap}
                 value="1,234"
-                label="LEADS CONTACTED"
+                label="LEADS CONVERTED"
                 change="+12% this month"
                 color={210}
                 trend="up"
@@ -871,9 +892,10 @@ export default function QuantumDashboard() {
                   prediction: '+47 today',
                   suggestion: 'Prepare for afternoon surge'
                 }}
+                iconModifier="electric"
               />
               <SmartMetricCard
-                icon={Target}
+                icon={Brain}
                 value="68%"
                 label="QUALIFICATION RATE"
                 change="+5% qualified leads"
@@ -885,9 +907,10 @@ export default function QuantumDashboard() {
                   prediction: '70% possible',
                   suggestion: 'Focus on tech industry leads'
                 }}
+                iconModifier="neural"
               />
               <SmartMetricCard
-                icon={TrendingUp}
+                icon={Sparkles}
                 value="24%"
                 label="CONVERSION RATE"
                 change="+8% to opportunities"
@@ -899,6 +922,7 @@ export default function QuantumDashboard() {
                   prediction: 'Trending up',
                   suggestion: 'Follow up on yesterday\'s calls'
                 }}
+                iconModifier="quantum"
               />
             </div>
           </section>
@@ -1765,6 +1789,14 @@ export default function QuantumDashboard() {
           overflow-y: auto;
           scroll-behavior: smooth;
         }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
 
         /* Enhanced Section Headers */
         .section-header-enhanced {
@@ -1854,6 +1886,51 @@ export default function QuantumDashboard() {
           display: flex;
           align-items: flex-start;
           gap: 1rem;
+        }
+        
+        .metric-content {
+          flex: 1;
+        }
+        
+        .metric-value {
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 0.25rem;
+          background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.8));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+        
+        .metric-label {
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 0.5rem;
+        }
+        
+        .metric-change {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.25rem 0.75rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          margin-top: 0.5rem;
+        }
+        
+        .metric-change.up {
+          color: hsl(120, 70%, 60%);
+          background: hsla(120, 70%, 50%, 0.1);
+        }
+        
+        .metric-change.down {
+          color: hsl(45, 70%, 60%);
+          background: hsla(45, 70%, 50%, 0.1);
         }
 
         .prediction-indicator {
@@ -2293,6 +2370,166 @@ export default function QuantumDashboard() {
         .secondary-action:hover {
           background: rgba(255, 255, 255, 0.08);
           transform: translateY(-1px);
+        }
+
+        /* Enhanced Icon Styles */
+        .metric-icon {
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 16px;
+          position: relative;
+          overflow: visible;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .metric-icon::before {
+          content: '';
+          position: absolute;
+          inset: -2px;
+          border-radius: 18px;
+          padding: 2px;
+          background: linear-gradient(135deg, hsla(270, 70%, 50%, 0.5), hsla(210, 70%, 50%, 0.5));
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask-composite: exclude;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+        }
+        
+        .smart-metric-card:hover .metric-icon::before {
+          opacity: 1;
+        }
+        
+        /* Icon Pulse Animation */
+        .icon-pulse {
+          animation: iconPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconPulse {
+          0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 0 transparent);
+          }
+          50% {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 20px currentColor);
+          }
+        }
+        
+        /* Electric Icon Effect */
+        .icon-electric {
+          position: relative;
+        }
+        
+        .icon-electric::after {
+          content: '';
+          position: absolute;
+          inset: -4px;
+          border-radius: 20px;
+          background: conic-gradient(
+            from 0deg,
+            transparent,
+            currentColor,
+            transparent,
+            currentColor,
+            transparent
+          );
+          opacity: 0.3;
+          animation: electricRotate 3s linear infinite;
+        }
+        
+        @keyframes electricRotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        /* Neural Icon Effect */
+        .icon-neural {
+          position: relative;
+        }
+        
+        .icon-overlay {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        }
+        
+        .icon-secondary {
+          position: absolute;
+          color: hsla(270, 70%, 60%, 0.6);
+          animation: neuralPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes neuralPulse {
+          0%, 100% {
+            transform: scale(0.8) rotate(0deg);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.5) rotate(180deg);
+            opacity: 0.6;
+          }
+        }
+        
+        /* Quantum Icon Effect */
+        .icon-quantum {
+          position: relative;
+        }
+        
+        .icon-particles {
+          position: absolute;
+          inset: -20px;
+          pointer-events: none;
+        }
+        
+        .icon-particles span {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background: currentColor;
+          border-radius: 50%;
+          opacity: 0;
+          animation: quantumOrbit 4s linear infinite;
+        }
+        
+        .icon-particles span:nth-child(1) {
+          top: 50%;
+          left: 0;
+          animation-delay: 0s;
+        }
+        
+        .icon-particles span:nth-child(2) {
+          top: 0;
+          left: 50%;
+          animation-delay: 1s;
+        }
+        
+        .icon-particles span:nth-child(3) {
+          top: 50%;
+          right: 0;
+          animation-delay: 2s;
+        }
+        
+        @keyframes quantumOrbit {
+          0% {
+            transform: translate(0, -50%) rotate(0deg) translateX(30px) rotate(0deg);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            transform: translate(0, -50%) rotate(360deg) translateX(30px) rotate(-360deg);
+            opacity: 0;
+          }
         }
 
         /* Quantum Card Base */

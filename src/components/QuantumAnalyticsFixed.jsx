@@ -34,8 +34,20 @@ const QUANTUM_CONSTANTS = {
 };
 
 // Quantum Metric Card Component
-const QuantumMetricCard = ({ icon: Icon, title, value, change, trend, subtitle, color }) => {
+const QuantumMetricCard = ({ icon: Icon, title, value, change, trend, subtitle, color, iconModifier }) => {
   const [animatedValue, setAnimatedValue] = useState(0);
+  
+  const getIconClass = () => {
+    const modifiers = {
+      pulse: 'icon-pulse',
+      electric: 'icon-electric',
+      neural: 'icon-neural',
+      quantum: 'icon-quantum',
+      shield: 'icon-shield',
+      sparkle: 'icon-sparkle'
+    };
+    return modifiers[iconModifier] || '';
+  };
   
   useEffect(() => {
     const numericValue = parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
@@ -78,8 +90,23 @@ const QuantumMetricCard = ({ icon: Icon, title, value, change, trend, subtitle, 
       }}
     >
       <div className="metric-header">
-        <div className="metric-icon">
+        <div className={`metric-icon ${getIconClass()}`}>
           <Icon size={20} />
+          {iconModifier === 'neural' && (
+            <div className="icon-overlay">
+              <Activity size={14} className="icon-secondary" />
+            </div>
+          )}
+          {iconModifier === 'quantum' && (
+            <div className="icon-particles">
+              <span></span><span></span><span></span>
+            </div>
+          )}
+          {iconModifier === 'sparkle' && (
+            <div className="icon-sparkles">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          )}
         </div>
         <div className="metric-trend">
           {trend === 'up' ? (
@@ -311,40 +338,44 @@ export default function QuantumAnalyticsFixed() {
         {/* Key Metrics */}
         <section className="key-metrics">
         <QuantumMetricCard
-          icon={Clock}
+          icon={Activity}
           title="Avg Response Time"
           value="47 seconds"
           change="-23%"
           trend="down"
           subtitle="vs. 61 seconds last period"
           color={QUANTUM_CONSTANTS.METRIC_COLORS.responseTime}
+          iconModifier="pulse"
         />
         <QuantumMetricCard
-          icon={Target}
+          icon={Zap}
           title="Lead Conversion Rate"
           value="24.3%"
           change="+2.3%"
           trend="up"
           subtitle="1,247 of 5,132 leads"
           color={QUANTUM_CONSTANTS.METRIC_COLORS.conversion}
+          iconModifier="electric"
         />
         <QuantumMetricCard
-          icon={DollarSign}
+          icon={TrendingUp}
           title="Revenue Generated"
           value="$487,230"
           change="+18.5%"
           trend="up"
           subtitle="From converted leads"
           color={QUANTUM_CONSTANTS.METRIC_COLORS.revenue}
+          iconModifier="quantum"
         />
         <QuantumMetricCard
-          icon={Users}
+          icon={Brain}
           title="Active Leads"
           value="1,832"
           change="+12%"
           trend="up"
           subtitle="In pipeline"
           color={QUANTUM_CONSTANTS.METRIC_COLORS.leads}
+          iconModifier="neural"
         />
         <QuantumMetricCard
           icon={Shield}
@@ -354,15 +385,17 @@ export default function QuantumAnalyticsFixed() {
           trend="up"
           subtitle="5-min target"
           color={QUANTUM_CONSTANTS.METRIC_COLORS.compliance}
+          iconModifier="shield"
         />
         <QuantumMetricCard
-          icon={DollarSign}
+          icon={Sparkles}
           title="Cost per Lead"
           value="$12.40"
           change="-8.3%"
           trend="down"
           subtitle="Efficiency improved"
           color={QUANTUM_CONSTANTS.METRIC_COLORS.cost}
+          iconModifier="sparkle"
         />
       </section>
 
