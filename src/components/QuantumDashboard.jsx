@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, Radio, MessageSquare, TrendingUp, Settings, Sparkles, Phone, Mail, Clock, ChevronRight, Activity, Target, Zap, Brain, Eye, Mic, Command, AlertCircle, CheckCircle, ArrowUp, ArrowDown, TrendingDown, Calendar, Shield, Headphones, Volume2, Keyboard, LogOut } from 'lucide-react';
+import { BarChart3, Users, Radio, MessageSquare, TrendingUp, Settings, Sparkles, Phone, Mail, Clock, ChevronRight, Activity, Target, Zap, Brain, Eye, Mic, Command, AlertCircle, CheckCircle, ArrowUp, ArrowDown, TrendingDown, Calendar, Shield, Headphones, Volume2, Keyboard } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 // Enhanced Quantum Constants
@@ -815,16 +815,6 @@ export default function QuantumDashboard() {
                     Settings
                   </button>
                   <div className="dropdown-divider"></div>
-                  <button 
-                    className="dropdown-item logout"
-                    onClick={() => {
-                      localStorage.removeItem('isAuthenticated');
-                      navigate('/login');
-                    }}
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
                 </div>
               )}
             </div>
@@ -1768,13 +1758,6 @@ export default function QuantumDashboard() {
           color: white;
         }
         
-        .dropdown-item.logout {
-          color: #ef4444;
-        }
-        
-        .dropdown-item.logout:hover {
-          background: rgba(239, 68, 68, 0.1);
-        }
         
         .dropdown-divider {
           height: 1px;
