@@ -919,10 +919,11 @@ export default function QuantumConversations() {
             </div>
 
             <div className="header-actions">
-            <button className="manage-channels-btn">
-              <Settings size={16} />
-              Manage Channels
-            </button>
+              <button className="manage-channels-btn">
+                <Settings size={16} />
+                Manage Channels
+              </button>
+            </div>
           </div>
         </div>
       </header>
