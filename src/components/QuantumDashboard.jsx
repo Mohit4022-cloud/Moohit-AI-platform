@@ -1875,6 +1875,11 @@ export default function QuantumDashboard() {
           position: relative;
           overflow: visible;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 2;
+        }
+        
+        .smart-metric-card:hover {
+          z-index: 200;
         }
 
         .smart-metric-card:hover {
@@ -1957,7 +1962,8 @@ export default function QuantumDashboard() {
           border-radius: 8px;
           backdrop-filter: blur(10px);
           animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          z-index: 10;
+          z-index: 1000;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .detail-item {
@@ -1997,6 +2003,7 @@ export default function QuantumDashboard() {
 
         .response-metrics-card {
           position: relative;
+          z-index: 1;
         }
 
         .chart-legend {
@@ -2540,6 +2547,8 @@ export default function QuantumDashboard() {
           border-radius: 12px;
           padding: 1.5rem;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          z-index: 1;
         }
 
         .quantum-card:hover {
