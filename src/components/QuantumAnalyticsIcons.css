@@ -1,0 +1,159 @@
+/* Quantum Analytics Icons Styles */
+
+.quantum-icon {
+  display: inline-block;
+  vertical-align: middle;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Calendar Icon Animations */
+.quantum-icon .calendar-base {
+  transform-origin: center;
+}
+
+.quantum-icon:hover .calendar-base {
+  transform: scale(1.1);
+}
+
+.quantum-icon .time-vortex {
+  transform-origin: center;
+}
+
+.quantum-icon:hover .time-vortex {
+  animation: vortexSpin 3s linear infinite;
+}
+
+@keyframes vortexSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Download Icon Animations */
+.quantum-icon .download-base {
+  transform-origin: center;
+}
+
+.quantum-icon:hover .download-base {
+  animation: downloadPulse 1s ease-in-out infinite;
+}
+
+@keyframes downloadPulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* Plus Icon Animations */
+.quantum-icon .plus-base {
+  transform-origin: center;
+}
+
+.quantum-icon:hover .plus-base {
+  animation: plusRotate 2s linear infinite;
+}
+
+@keyframes plusRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(90deg); }
+}
+
+/* Share Icon Animations */
+.quantum-icon .network-links {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 0;
+}
+
+.quantum-icon:hover .network-links {
+  animation: networkFlow 2s linear infinite;
+}
+
+@keyframes networkFlow {
+  to { stroke-dashoffset: -40; }
+}
+
+/* Bell Icon Animations */
+.quantum-icon .bell-base {
+  transform-origin: top center;
+}
+
+.quantum-icon:hover .bell-base {
+  animation: bellRing 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes bellRing {
+  0% { transform: rotate(-3deg); }
+  100% { transform: rotate(3deg); }
+}
+
+/* Chevron Icon Animations */
+.quantum-icon .chevron-base {
+  transform-origin: center;
+}
+
+.quantum-icon:hover .chevron-base {
+  animation: chevronBounce 1s ease-in-out infinite;
+}
+
+@keyframes chevronBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Export Icon Animations */
+.quantum-icon .export-base {
+  transform-origin: center;
+}
+
+.quantum-icon:hover .export-base path:first-child {
+  animation: exportLift 1.5s ease-in-out infinite;
+}
+
+@keyframes exportLift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Button Integration Styles */
+.date-range-btn .quantum-icon,
+.create-report-btn .quantum-icon,
+.export-btn .quantum-icon,
+.quick-action-btn .quantum-icon {
+  margin-right: 0.25rem;
+  color: currentColor;
+}
+
+.date-range-btn:hover .quantum-icon,
+.create-report-btn:hover .quantum-icon,
+.export-btn:hover .quantum-icon,
+.quick-action-btn:hover .quantum-icon {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+/* Enhanced Icon Colors */
+.create-report-btn .quantum-icon {
+  color: hsl(270, 70%, 70%);
+}
+
+.export-btn .quantum-icon {
+  color: hsl(120, 70%, 60%);
+}
+
+.export-btn.exporting .quantum-icon {
+  animation: none;
+  opacity: 0.6;
+}
+
+/* Quick Action Icon Enhancements */
+.quick-action-btn .quantum-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-action-btn:hover .quantum-icon {
+  transform: scale(1.1);
+}
+
+/* Responsive Adjustments */
+@media (prefers-reduced-motion: reduce) {
+  .quantum-icon * {
+    animation: none !important;
+  }
+}

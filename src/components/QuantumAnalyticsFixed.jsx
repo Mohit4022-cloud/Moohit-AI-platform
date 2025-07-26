@@ -2,17 +2,21 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Clock, Users, Target, DollarSign, Shield, Zap,
-  Brain, Activity, Calendar, Download, Plus, ChevronDown,
-  Settings, RefreshCw, Sparkles, AlertCircle, Info,
-  ArrowUp, ArrowDown, Bell, TrendingUp, TrendingDown,
-  AlertTriangle, Lightbulb, Share2, FileText
+  Brain, Activity, Settings, RefreshCw, Sparkles, AlertCircle, Info,
+  ArrowUp, ArrowDown, TrendingUp, TrendingDown,
+  AlertTriangle, Lightbulb, FileText
 } from 'lucide-react';
+import { 
+  QuantumCalendar, QuantumDownload, QuantumPlus, QuantumShare, 
+  QuantumBell, QuantumChevron, QuantumExport
+} from './QuantumAnalyticsIcons';
 import { 
   LineChart, Line, AreaChart, Area, BarChart, Bar, 
   ResponsiveContainer, XAxis, YAxis, 
   CartesianGrid, Tooltip, Legend
 } from 'recharts';
 import './QuantumAnalytics.css';
+import './QuantumAnalyticsIcons.css';
 
 // Quantum Constants
 const QUANTUM_CONSTANTS = {
@@ -301,15 +305,15 @@ export default function QuantumAnalyticsFixed() {
 
           <div className="header-controls">
           <button className="date-range-btn">
-            <Calendar size={16} />
+            <QuantumCalendar size={16} />
             {timeRange}
-            <ChevronDown size={16} />
+            <QuantumChevron size={16} direction="down" />
           </button>
           
           <button 
             className="create-report-btn"
           >
-            <Plus size={16} />
+            <QuantumPlus size={16} />
             Create Report
           </button>
           
@@ -324,7 +328,7 @@ export default function QuantumAnalyticsFixed() {
               </>
             ) : (
               <>
-                <Download size={16} />
+                <QuantumExport size={16} />
                 Export
               </>
             )}
@@ -436,15 +440,15 @@ export default function QuantumAnalyticsFixed() {
           <div className="quick-actions">
             <h3>Quick Actions</h3>
             <button className="quick-action-btn">
-              <Share2 size={16} />
+              <QuantumShare size={16} />
               Share Dashboard
             </button>
             <button className="quick-action-btn">
-              <Bell size={16} />
+              <QuantumBell size={16} />
               Set Alerts
             </button>
             <button className="quick-action-btn">
-              <Calendar size={16} />
+              <QuantumCalendar size={16} />
               Schedule Report
             </button>
           </div>
