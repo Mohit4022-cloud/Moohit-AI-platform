@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Clock, Users, AlertTriangle, TrendingUp, Phone, Mail, MessageSquare, 
   Calendar, ChevronUp, ChevronDown, MoreVertical, Zap, Brain, Activity,
@@ -59,6 +60,7 @@ const generateMockQueueData = () => {
 };
 
 export default function QuantumLiveQueue() {
+  const navigate = useNavigate();
   const [queueData, setQueueData] = useState(generateMockQueueData());
   const [selectedLead, setSelectedLead] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -98,6 +100,13 @@ export default function QuantumLiveQueue() {
       <header className="queue-header">
         <div className="header-content">
           <div className="header-left">
+            <button 
+              className="back-button"
+              onClick={() => navigate('/dashboard')}
+              title="Back to Dashboard"
+            >
+              ←
+            </button>
             <div>
               <h1 className="page-title">Live Queue</h1>
               <p className="page-subtitle">Real-time lead management with AI prioritization</p>

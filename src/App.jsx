@@ -5,6 +5,10 @@ import QuantumDashboard from './components/QuantumDashboard'
 import QuantumLeadsPage from './components/QuantumLeadsPage'
 import QuantumConversations from './components/QuantumConversations'
 import QuantumAnalytics from './components/QuantumAnalytics'
+import QuantumAnalyticsDebug from './components/QuantumAnalyticsDebug'
+import QuantumAnalyticsTest from './components/QuantumAnalyticsTest'
+import QuantumAnalyticsMinimal from './components/QuantumAnalyticsMinimal'
+import QuantumAnalyticsFixed from './components/QuantumAnalyticsFixed'
 import QuantumCampaigns from './components/QuantumCampaigns'
 import QuantumSettings from './components/QuantumSettings'
 import QuantumLiveQueue from './components/QuantumLiveQueueFixed'
@@ -39,7 +43,7 @@ function App() {
         } />
         <Route path="/analytics" element={
           <ProtectedRoute>
-            <QuantumAnalytics />
+            <QuantumAnalyticsFixed />
           </ProtectedRoute>
         } />
         <Route path="/campaigns" element={

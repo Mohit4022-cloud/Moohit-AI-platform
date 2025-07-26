@@ -902,25 +902,27 @@ export default function QuantumConversations() {
 
       {/* Header */}
       <header className="conversations-header">
-        <div className="header-content">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/dashboard')}
-            title="Back to Dashboard"
-          >
-            ←
-          </button>
-          <div>
-            <h1 className="page-title">Conversations</h1>
-            <p className="page-subtitle">Manage all your customer conversations</p>
+        <div className="header-wrapper">
+          <div className="header-content">
+            <button 
+              className="back-button"
+              onClick={() => navigate('/dashboard')}
+              title="Back to Dashboard"
+            >
+              ←
+            </button>
+            <div>
+              <h1 className="page-title">Conversations</h1>
+              <p className="page-subtitle">Manage all your customer conversations</p>
+            </div>
           </div>
-        </div>
 
-        <div className="header-actions">
-          <button className="manage-channels-btn">
-            <Settings size={16} />
-            Manage Channels
-          </button>
+          <div className="header-actions">
+            <button className="manage-channels-btn">
+              <Settings size={16} />
+              Manage Channels
+            </button>
+          </div>
         </div>
       </header>
 
@@ -1081,9 +1083,15 @@ export default function QuantumConversations() {
           background: rgba(255, 255, 255, 0.02);
           backdrop-filter: blur(20px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-wrapper {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          max-width: 1600px;
+          margin: 0 auto;
+          width: 100%;
         }
 
         .header-content {
