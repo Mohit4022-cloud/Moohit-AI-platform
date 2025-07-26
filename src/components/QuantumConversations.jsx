@@ -1022,13 +1022,13 @@ export default function QuantumConversations() {
           background-image: 
             linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
             linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-          background-size: 40px 40px;
-          animation: gridFloat 30s linear infinite;
+          background-size: 30px 30px;
+          animation: gridFloat 20s linear infinite;
         }
 
         @keyframes gridFloat {
           0% { transform: translate(0, 0); }
-          100% { transform: translate(40px, 40px); }
+          100% { transform: translate(30px, 30px); }
         }
 
         .quantum-waves {

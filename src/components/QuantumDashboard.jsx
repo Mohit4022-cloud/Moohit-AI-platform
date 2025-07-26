@@ -1846,7 +1846,7 @@ export default function QuantumDashboard() {
         }
 
         .smart-metric-card:hover {
-          transform: translateY(-4px);
+          transform: translateY(-2px);
           box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
         }
 

@@ -467,7 +467,7 @@ export default function QuantumSettings() {
       <style jsx>{`
         .quantum-settings {
           min-height: 100vh;
-          background: #0f0f1a;
+          background: #0a0a0f;
           color: #ffffff;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           position: relative;
@@ -488,7 +488,7 @@ export default function QuantumSettings() {
             linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
             linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
           background-size: 30px 30px;
-          animation: gridMove 60s linear infinite;
+          animation: gridMove 20s linear infinite;
         }
 
         @keyframes gridMove {
