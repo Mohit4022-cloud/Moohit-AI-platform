@@ -2891,36 +2891,41 @@ export default function QuantumDashboard() {
                 ×
               </button>
             </div>
+            <div className="ai-notice">
+              <AlertCircle size={20} />
+              <div>
+                <strong>Note:</strong> This feature has been temporarily disabled due to misuse of the OpenAI API by unknown users, which led to unexpected billing spikes.
+              </div>
+            </div>
             <div className="ai-suggestions">
-              <div className="ai-suggestion-item" onClick={() => {
-                showToast('AI is analyzing your leads...', 'info');
-                setTimeout(() => showToast('5 high-priority leads identified!', 'success'), 2000);
-                setShowAIModal(false);
+              <div className="ai-suggestion-item disabled" onClick={() => {
+                showToast('This feature is temporarily disabled', 'warning');
               }}>
                 <Target size={16} />
                 <div>
                   <h4>Find Hidden Opportunities</h4>
                   <p>AI will analyze behavior patterns to identify high-potential leads</p>
+                  <span className="disabled-badge">Temporarily Disabled</span>
                 </div>
               </div>
-              <div className="ai-suggestion-item" onClick={() => {
-                showToast('Generating personalized scripts...', 'info');
-                setShowAIModal(false);
+              <div className="ai-suggestion-item disabled" onClick={() => {
+                showToast('This feature is temporarily disabled', 'warning');
               }}>
                 <MessageSquare size={16} />
                 <div>
                   <h4>Generate Call Scripts</h4>
                   <p>Create personalized talking points for each lead</p>
+                  <span className="disabled-badge">Temporarily Disabled</span>
                 </div>
               </div>
-              <div className="ai-suggestion-item" onClick={() => {
-                showToast('Optimizing schedule...', 'info');
-                setShowAIModal(false);
+              <div className="ai-suggestion-item disabled" onClick={() => {
+                showToast('This feature is temporarily disabled', 'warning');
               }}>
                 <Calendar size={16} />
                 <div>
                   <h4>Optimize My Schedule</h4>
                   <p>AI will arrange your day for maximum productivity</p>
+                  <span className="disabled-badge">Temporarily Disabled</span>
                 </div>
               </div>
             </div>
@@ -3186,6 +3191,29 @@ export default function QuantumDashboard() {
           max-width: 600px;
         }
         
+        .ai-notice {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          padding: 1rem;
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+          color: #f59e0b;
+          font-size: 0.875rem;
+          line-height: 1.5;
+        }
+        
+        .ai-notice svg {
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+        
+        .ai-notice strong {
+          color: #fbbf24;
+        }
+        
         .ai-suggestions {
           display: flex;
           flex-direction: column;
@@ -3207,6 +3235,29 @@ export default function QuantumDashboard() {
           background: rgba(139, 92, 246, 0.1);
           border-color: rgba(139, 92, 246, 0.3);
           transform: translateX(4px);
+        }
+        
+        .ai-suggestion-item.disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        
+        .ai-suggestion-item.disabled:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.08);
+          transform: none;
+        }
+        
+        .disabled-badge {
+          display: inline-block;
+          margin-top: 0.5rem;
+          padding: 0.25rem 0.5rem;
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          border-radius: 4px;
+          font-size: 0.75rem;
+          color: #f59e0b;
+          font-weight: 500;
         }
         
         .ai-suggestion-item h4 {
