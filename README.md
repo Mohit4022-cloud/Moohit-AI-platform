@@ -5,7 +5,6 @@
 [![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-5.0.0-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-16+-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -172,6 +171,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Add tests for new features
 4. Update documentation as needed
 
+## 📜 License
+
+This project is proprietary software. All rights reserved.
 
 ## 🙏 Acknowledgments
 
