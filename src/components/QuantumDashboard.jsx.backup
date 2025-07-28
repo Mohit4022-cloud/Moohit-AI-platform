@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, Radio, MessageSquare, TrendingUp, Settings, Sparkles, Phone, Mail, Clock, ChevronRight, Activity, Target, Zap, Brain, Eye, Mic, Command, AlertCircle, CheckCircle, ArrowUp, ArrowDown, TrendingDown, Calendar, Shield, Headphones, Volume2, Keyboard, X } from 'lucide-react';
+import { BarChart3, Users, Radio, MessageSquare, TrendingUp, Settings, Sparkles, Phone, Mail, Clock, ChevronRight, Activity, Target, Zap, Brain, Eye, Mic, Command, AlertCircle, CheckCircle, ArrowUp, ArrowDown, TrendingDown, Calendar, Shield, Headphones, Volume2, Keyboard } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 // Enhanced Quantum Constants
@@ -421,7 +421,7 @@ const VoiceControl = ({ onCommand }) => {
 };
 
 // Enhanced Lead Card with AI Scoring
-const EnhancedLeadCard = ({ lead, index, aiScore, onAction }) => {
+const EnhancedLeadCard = ({ lead, index, aiScore }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [quickActions, setQuickActions] = useState(false);
   
@@ -473,22 +473,13 @@ const EnhancedLeadCard = ({ lead, index, aiScore, onAction }) => {
           </button>
           {quickActions && (
             <div className="quick-actions">
-              <button className="quick-action" title="Call" onClick={(e) => {
-                e.stopPropagation();
-                onAction(lead.id, 'call');
-              }}>
+              <button className="quick-action" title="Call">
                 <Phone size={14} />
               </button>
-              <button className="quick-action" title="Email" onClick={(e) => {
-                e.stopPropagation();
-                onAction(lead.id, 'email');
-              }}>
+              <button className="quick-action" title="Email">
                 <Mail size={14} />
               </button>
-              <button className="quick-action" title="Chat" onClick={(e) => {
-                e.stopPropagation();
-                onAction(lead.id, 'chat');
-              }}>
+              <button className="quick-action" title="Chat">
                 <MessageSquare size={14} />
               </button>
             </div>
@@ -521,24 +512,15 @@ const EnhancedLeadCard = ({ lead, index, aiScore, onAction }) => {
             </div>
           </div>
           <div className="lead-actions-bar">
-            <button className="primary-action" onClick={(e) => {
-              e.stopPropagation();
-              onAction(lead.id, 'call');
-            }}>
+            <button className="primary-action">
               <Phone size={14} />
               Call Now
             </button>
-            <button className="secondary-action" onClick={(e) => {
-              e.stopPropagation();
-              onAction(lead.id, 'schedule');
-            }}>
+            <button className="secondary-action">
               <Calendar size={14} />
               Schedule
             </button>
-            <button className="secondary-action" onClick={(e) => {
-              e.stopPropagation();
-              onAction(lead.id, 'qualify');
-            }}>
+            <button className="secondary-action">
               <Shield size={14} />
               Qualify
             </button>
@@ -582,15 +564,6 @@ export default function QuantumDashboard() {
   const [focusMode, setFocusMode] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  
-  // New state for button functionalities
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('hot-leads');
-  const [showAIModal, setShowAIModal] = useState(false);
-  const [showQuickActionsModal, setShowQuickActionsModal] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null);
-  const [leadActionStatus, setLeadActionStatus] = useState({});
   
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -706,97 +679,6 @@ export default function QuantumDashboard() {
     // Handle AI action
   };
   
-  // Toast notification helper
-  const showToast = (message, type = 'info') => {
-    setToastMessage({ message, type });
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-  
-  // Navigation handler
-  const handleNavigation = (navId) => {
-    setSelectedNav(navId);
-    if (navId === 'leads') {
-      navigate('/leads');
-    } else if (navId === 'queue') {
-      navigate('/live-queue');
-    } else if (navId === 'conversations') {
-      navigate('/conversations');
-    } else if (navId === 'analytics') {
-      navigate('/analytics');
-    } else if (navId === 'campaigns') {
-      navigate('/campaigns');
-    } else if (navId === 'settings') {
-      navigate('/settings');
-    }
-    showToast(`Navigating to ${navId}`, 'success');
-  };
-  
-  // Lead action handlers
-  const handleLeadAction = (leadId, action) => {
-    setLeadActionStatus({ ...leadActionStatus, [leadId]: action });
-    switch(action) {
-      case 'call':
-        showToast('Initiating call...', 'info');
-        setTimeout(() => showToast('Call connected!', 'success'), 1500);
-        break;
-      case 'email':
-        showToast('Opening email composer...', 'info');
-        break;
-      case 'chat':
-        showToast('Starting chat session...', 'info');
-        break;
-      case 'schedule':
-        showToast('Opening calendar...', 'info');
-        break;
-      case 'qualify':
-        showToast('Running qualification analysis...', 'info');
-        setTimeout(() => showToast('Lead qualified as High Priority', 'success'), 2000);
-        break;
-      default:
-        showToast(`Action ${action} initiated`, 'info');
-    }
-  };
-  
-  // Filter handlers
-  const handleFilterChange = (filter) => {
-    setActiveFilter(filter);
-    showToast(`Filtering by: ${filter === 'available' ? 'Available to Call' : 'Hot Leads'}`, 'info');
-  };
-  
-  // Quick Actions handler
-  const handleQuickActions = () => {
-    setShowQuickActionsModal(true);
-    showToast('Quick Actions opened', 'info');
-  };
-  
-  // AI button handler
-  const handleTryAI = () => {
-    setShowAIModal(true);
-    showToast('AI Assistant activated', 'info');
-  };
-  
-  // View All handler
-  const handleViewAll = () => {
-    navigate('/leads');
-    showToast('Viewing all leads', 'info');
-  };
-  
-  // Today button handler
-  const handleToday = () => {
-    showToast('Showing today\'s activities', 'info');
-    // Could add filtering logic here
-  };
-  
-  // Keyboard shortcuts handler
-  const handleKeyboardShortcuts = () => {
-    setShowKeyboardShortcuts(true);
-  };
-  
-  // Notification handler
-  const handleNotifications = () => {
-    setShowNotifications(!showNotifications);
-  };
-  
   const navItems = [
     { id: 'dashboard', label: 'DASHBOARD', icon: BarChart3, badge: null },
     { id: 'leads', label: 'LEADS', icon: Users, badge: '23' },
@@ -838,7 +720,22 @@ export default function QuantumDashboard() {
               <button
                 key={item.id}
                 className={`nav-item ${selectedNav === item.id ? 'active' : ''}`}
-                onClick={() => handleNavigation(item.id)}
+                onClick={() => {
+                  setSelectedNav(item.id);
+                  if (item.id === 'leads') {
+                    navigate('/leads');
+                  } else if (item.id === 'queue') {
+                    navigate('/live-queue');
+                  } else if (item.id === 'conversations') {
+                    navigate('/conversations');
+                  } else if (item.id === 'campaigns') {
+                    navigate('/campaigns');
+                  } else if (item.id === 'analytics') {
+                    navigate('/analytics');
+                  } else if (item.id === 'settings') {
+                    navigate('/settings');
+                  }
+                }}
               >
                 <Icon size={20} />
                 <span>{item.label}</span>
@@ -851,7 +748,7 @@ export default function QuantumDashboard() {
         <div className="sidebar-footer">
           <CognitiveLoadIndicator load={cognitiveLoad} state={userContext.cognitiveState} />
           
-          <button className="quantum-button quantum-button--secondary" onClick={handleTryAI}>
+          <button className="quantum-button quantum-button--secondary">
             <Sparkles />
             Try AI
             <span className="live-indicator">LIVE</span>
@@ -886,41 +783,14 @@ export default function QuantumDashboard() {
           <div className="header-actions">
             {voiceEnabled && <VoiceControl onCommand={handleVoiceCommand} />}
             
-            <button className="icon-button" title="Keyboard Shortcuts" onClick={handleKeyboardShortcuts}>
+            <button className="icon-button" title="Keyboard Shortcuts">
               <Keyboard size={20} />
             </button>
             
-            <div className="notification-wrapper">
-              <button className="icon-button notification-button" onClick={handleNotifications}>
-                <Activity size={20} />
-                <span className="notification-dot"></span>
-              </button>
-              {showNotifications && (
-                <div className="notifications-dropdown">
-                  <div className="notification-item">
-                    <CheckCircle size={16} className="notification-icon success" />
-                    <div>
-                      <p>Lead qualified successfully</p>
-                      <span className="notification-time">2 minutes ago</span>
-                    </div>
-                  </div>
-                  <div className="notification-item">
-                    <AlertCircle size={16} className="notification-icon info" />
-                    <div>
-                      <p>New hot lead assigned</p>
-                      <span className="notification-time">5 minutes ago</span>
-                    </div>
-                  </div>
-                  <div className="notification-item">
-                    <TrendingUp size={16} className="notification-icon success" />
-                    <div>
-                      <p>Conversion rate up 15%</p>
-                      <span className="notification-time">1 hour ago</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <button className="icon-button notification-button">
+              <Activity size={20} />
+              <span className="notification-dot"></span>
+            </button>
             
             <div className="user-menu" style={{ position: 'relative' }}>
               <div 
@@ -972,11 +842,11 @@ export default function QuantumDashboard() {
                 </p>
               </div>
               <div className="header-controls">
-                <button className="control-button" onClick={handleToday}>
+                <button className="control-button">
                   <Calendar size={16} />
                   Today
                 </button>
-                <button className="control-button primary" onClick={handleQuickActions}>
+                <button className="control-button primary">
                   <Zap size={16} />
                   Quick Actions
                 </button>
@@ -1151,21 +1021,15 @@ export default function QuantumDashboard() {
               <h3>Priority Lead Queue</h3>
               <span className="section-subtitle">AI-ranked by conversion probability</span>
               <div className="section-actions">
-                <button 
-                  className={`filter-button ${activeFilter === 'available' ? 'active' : ''}`}
-                  onClick={() => handleFilterChange('available')}
-                >
+                <button className="filter-button">
                   <Headphones size={16} />
                   Available to Call
                 </button>
-                <button 
-                  className={`filter-button ${activeFilter === 'hot-leads' ? 'active' : ''}`}
-                  onClick={() => handleFilterChange('hot-leads')}
-                >
+                <button className="filter-button active">
                   <Zap size={16} />
                   Hot Leads
                 </button>
-                <button className="view-all-btn" onClick={handleViewAll}>
+                <button className="view-all-btn">
                   View All
                   <ChevronRight size={16} />
                 </button>
@@ -1179,7 +1043,6 @@ export default function QuantumDashboard() {
                   lead={lead} 
                   index={index}
                   aiScore={lead.aiScore}
-                  onAction={handleLeadAction}
                 />
               ))}
             </div>
@@ -2824,533 +2687,6 @@ export default function QuantumDashboard() {
           .header-controls {
             width: 100%;
           }
-        }
-      `}</style>
-      
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className={`toast toast-${toastMessage.type}`}>
-          {toastMessage.type === 'success' && <CheckCircle size={16} />}
-          {toastMessage.type === 'info' && <AlertCircle size={16} />}
-          {toastMessage.type === 'error' && <AlertCircle size={16} />}
-          <span>{toastMessage.message}</span>
-        </div>
-      )}
-      
-      {/* Quick Actions Modal */}
-      {showQuickActionsModal && (
-        <div className="modal-overlay" onClick={() => setShowQuickActionsModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3><Zap size={24} /> Quick Actions</h3>
-              <button className="modal-close" onClick={() => setShowQuickActionsModal(false)}>
-                ×
-              </button>
-            </div>
-            <div className="quick-actions-grid">
-              <button className="quick-action-item" onClick={() => {
-                showToast('Bulk email sent to 10 leads', 'success');
-                setShowQuickActionsModal(false);
-              }}>
-                <Mail size={24} />
-                <span>Bulk Email</span>
-              </button>
-              <button className="quick-action-item" onClick={() => {
-                showToast('Auto-dialer started', 'success');
-                setShowQuickActionsModal(false);
-              }}>
-                <Phone size={24} />
-                <span>Auto Dial</span>
-              </button>
-              <button className="quick-action-item" onClick={() => {
-                showToast('Lead scoring updated', 'success');
-                setShowQuickActionsModal(false);
-              }}>
-                <Target size={24} />
-                <span>Re-score Leads</span>
-              </button>
-              <button className="quick-action-item" onClick={() => {
-                showToast('Campaign created', 'success');
-                setShowQuickActionsModal(false);
-              }}>
-                <Zap size={24} />
-                <span>New Campaign</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* AI Assistant Modal */}
-      {showAIModal && (
-        <div className="modal-overlay" onClick={() => setShowAIModal(false)}>
-          <div className="modal-content ai-modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3><Brain size={24} /> AI Assistant</h3>
-              <button className="modal-close" onClick={() => setShowAIModal(false)}>
-                ×
-              </button>
-            </div>
-            <div className="ai-suggestions">
-              <div className="ai-suggestion-item" onClick={() => {
-                showToast('AI is analyzing your leads...', 'info');
-                setTimeout(() => showToast('5 high-priority leads identified!', 'success'), 2000);
-                setShowAIModal(false);
-              }}>
-                <Target size={16} />
-                <div>
-                  <h4>Find Hidden Opportunities</h4>
-                  <p>AI will analyze behavior patterns to identify high-potential leads</p>
-                </div>
-              </div>
-              <div className="ai-suggestion-item" onClick={() => {
-                showToast('Generating personalized scripts...', 'info');
-                setShowAIModal(false);
-              }}>
-                <MessageSquare size={16} />
-                <div>
-                  <h4>Generate Call Scripts</h4>
-                  <p>Create personalized talking points for each lead</p>
-                </div>
-              </div>
-              <div className="ai-suggestion-item" onClick={() => {
-                showToast('Optimizing schedule...', 'info');
-                setShowAIModal(false);
-              }}>
-                <Calendar size={16} />
-                <div>
-                  <h4>Optimize My Schedule</h4>
-                  <p>AI will arrange your day for maximum productivity</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Keyboard Shortcuts Modal */}
-      {showKeyboardShortcuts && (
-        <div className="modal-overlay" onClick={() => setShowKeyboardShortcuts(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3><Keyboard size={24} /> Keyboard Shortcuts</h3>
-              <button className="modal-close" onClick={() => setShowKeyboardShortcuts(false)}>
-                ×
-              </button>
-            </div>
-            <div className="shortcuts-list">
-              <div className="shortcut-item">
-                <kbd>⌘K</kbd>
-                <span>Open Command Palette</span>
-              </div>
-              <div className="shortcut-item">
-                <kbd>⌘F</kbd>
-                <span>Toggle Focus Mode</span>
-              </div>
-              <div className="shortcut-item">
-                <kbd>⌘V</kbd>
-                <span>Toggle Voice Control</span>
-              </div>
-              <div className="shortcut-item">
-                <kbd>⌘1</kbd>
-                <span>Go to Dashboard</span>
-              </div>
-              <div className="shortcut-item">
-                <kbd>⌘2</kbd>
-                <span>Go to Leads</span>
-              </div>
-              <div className="shortcut-item">
-                <kbd>⌘3</kbd>
-                <span>Go to Live Queue</span>
-              </div>
-            </div>
-            <button className="close-button" onClick={() => setShowKeyboardShortcuts(false)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-      
-      <style jsx>{`
-        /* Toast Styles */
-        .toast {
-          position: fixed;
-          bottom: 2rem;
-          right: 2rem;
-          padding: 1rem 1.5rem;
-          background: rgba(0, 0, 0, 0.9);
-          color: white;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-          animation: slideIn 0.3s ease-out;
-          z-index: 10000;
-        }
-        
-        .toast-success {
-          border-left: 4px solid #10b981;
-        }
-        
-        .toast-info {
-          border-left: 4px solid #3b82f6;
-        }
-        
-        .toast-error {
-          border-left: 4px solid #ef4444;
-        }
-        
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        
-        /* Modal Styles */
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.85);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9999;
-          backdrop-filter: blur(20px);
-        }
-        
-        .modal-content {
-          background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(16, 16, 30, 0.95) 100%);
-          border: 1px solid rgba(139, 92, 246, 0.3);
-          border-radius: 24px;
-          padding: 2.5rem;
-          max-width: 600px;
-          width: 90%;
-          max-height: 80vh;
-          overflow-y: auto;
-          box-shadow: 
-            0 25px 50px rgba(0, 0, 0, 0.5),
-            0 0 100px rgba(139, 92, 246, 0.1),
-            inset 0 0 60px rgba(139, 92, 246, 0.05);
-          animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-        }
-        
-        .modal-content::before {
-          content: '';
-          position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          background: linear-gradient(45deg, #8b5cf6, #3b82f6, #8b5cf6);
-          border-radius: 24px;
-          opacity: 0.5;
-          z-index: -1;
-          animation: modalGlow 3s ease-in-out infinite;
-        }
-        
-        @keyframes modalGlow {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.6; }
-        }
-        
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-        }
-        
-        .modal-content h3 {
-          margin: 0;
-          color: white;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          font-size: 1.5rem;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-        }
-        
-        .modal-close {
-          background: transparent;
-          border: none;
-          color: rgba(255, 255, 255, 0.6);
-          font-size: 2rem;
-          line-height: 1;
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          border-radius: 50%;
-          transition: all 0.3s;
-        }
-        
-        .modal-close:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          transform: rotate(90deg);
-        }
-        
-        @keyframes modalSlideIn {
-          from {
-            transform: translateY(-50px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-        
-        /* Quick Actions Grid */
-        .quick-actions-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1.25rem;
-          margin-top: 0.5rem;
-        }
-        
-        .quick-action-item {
-          padding: 2rem 1.5rem;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-          border: 1px solid rgba(139, 92, 246, 0.2);
-          border-radius: 16px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1rem;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .quick-action-item::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
-          opacity: 0;
-          transition: opacity 0.3s;
-        }
-        
-        .quick-action-item:hover {
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
-          border-color: rgba(139, 92, 246, 0.5);
-          transform: translateY(-4px) scale(1.02);
-          box-shadow: 
-            0 10px 30px rgba(139, 92, 246, 0.2),
-            0 0 40px rgba(139, 92, 246, 0.1);
-        }
-        
-        .quick-action-item:hover::before {
-          opacity: 1;
-        }
-        
-        .quick-action-item svg {
-          filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4));
-        }
-        
-        .quick-action-item:hover svg {
-          filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
-          transform: scale(1.1);
-          transition: all 0.3s;
-        }
-        
-        .quick-action-item span {
-          font-size: 0.9rem;
-          font-weight: 600;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.9);
-        }
-        
-        /* AI Modal */
-        .ai-modal {
-          max-width: 600px;
-        }
-        
-        .ai-suggestions {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        
-        .ai-suggestion-item {
-          padding: 1.25rem;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          display: flex;
-          gap: 1rem;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-        
-        .ai-suggestion-item:hover {
-          background: rgba(139, 92, 246, 0.1);
-          border-color: rgba(139, 92, 246, 0.3);
-          transform: translateX(4px);
-        }
-        
-        .ai-suggestion-item h4 {
-          margin: 0 0 0.25rem 0;
-          color: white;
-          font-size: 1rem;
-        }
-        
-        .ai-suggestion-item p {
-          margin: 0;
-          color: rgba(255, 255, 255, 0.6);
-          font-size: 0.875rem;
-        }
-        
-        /* Shortcuts List */
-        .shortcuts-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          margin-bottom: 1.5rem;
-        }
-        
-        .shortcut-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.75rem;
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 8px;
-        }
-        
-        .shortcut-item kbd {
-          background: rgba(255, 255, 255, 0.1);
-          padding: 0.25rem 0.5rem;
-          border-radius: 4px;
-          font-family: monospace;
-          font-size: 0.875rem;
-        }
-        
-        .close-button {
-          width: 100%;
-          padding: 1rem;
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
-          border: 1px solid rgba(139, 92, 246, 0.4);
-          border-radius: 12px;
-          color: white;
-          font-weight: 600;
-          font-size: 0.9rem;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .close-button::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transition: left 0.5s;
-        }
-        
-        .close-button:hover {
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.3) 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
-        }
-        
-        .close-button:hover::before {
-          left: 100%;
-        }
-        
-        /* Notifications */
-        .notification-wrapper {
-          position: relative;
-        }
-        
-        .notifications-dropdown {
-          position: absolute;
-          top: calc(100% + 0.5rem);
-          right: 0;
-          background: linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(16, 16, 30, 0.98) 100%);
-          border: 1px solid rgba(139, 92, 246, 0.3);
-          border-radius: 16px;
-          padding: 0.75rem;
-          min-width: 320px;
-          box-shadow: 
-            0 15px 40px rgba(0, 0, 0, 0.4),
-            0 0 50px rgba(139, 92, 246, 0.1);
-          z-index: 1000;
-          animation: dropdownSlideIn 0.2s ease-out;
-        }
-        
-        @keyframes dropdownSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .notification-item {
-          padding: 0.75rem;
-          display: flex;
-          gap: 0.75rem;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-        
-        .notification-item:hover {
-          background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .notification-icon {
-          flex-shrink: 0;
-          margin-top: 0.125rem;
-        }
-        
-        .notification-icon.success {
-          color: #10b981;
-        }
-        
-        .notification-icon.info {
-          color: #3b82f6;
-        }
-        
-        .notification-item p {
-          margin: 0;
-          font-size: 0.875rem;
-          color: white;
-        }
-        
-        .notification-time {
-          font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.5);
         }
       `}</style>
     </div>

@@ -213,6 +213,13 @@ export default function QuantumCampaigns() {
   const [showAI, setShowAI] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [dateRange, setDateRange] = useState('last30days');
+  const [toastMessage, setToastMessage] = useState(null);
+  const [showDateRangeModal, setShowDateRangeModal] = useState(false);
+  const [showABTestModal, setShowABTestModal] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showCreateCampaignModal, setShowCreateCampaignModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
   const [campaigns, setCampaigns] = useState([
     {
       id: 1,
@@ -257,12 +264,60 @@ export default function QuantumCampaigns() {
                      campaigns.reduce((acc, c) => acc + c.metrics.sent, 0) * 100).toFixed(1)
   }), [campaigns]);
 
+  // Toast helper
+  const showToast = (message, type = 'info') => {
+    setToastMessage({ message, type });
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const handleCampaignAction = (action, campaign) => {
-    // Action handler for campaign actions
-    if (action === 'analytics') {
-      setSelectedCampaign(campaign);
-      // Navigate to detailed analytics
+    setSelectedCampaign(campaign);
+    
+    switch(action) {
+      case 'analytics':
+        setShowAnalyticsModal(true);
+        showToast(`Opening analytics for ${campaign.name}`, 'info');
+        break;
+      case 'edit':
+        showToast(`Editing ${campaign.name}`, 'info');
+        // Could open edit modal here
+        break;
+      case 'toggle':
+        const newStatus = campaign.status === 'active' ? 'paused' : 'active';
+        setCampaigns(prev => prev.map(c => 
+          c.id === campaign.id ? { ...c, status: newStatus } : c
+        ));
+        showToast(
+          `Campaign ${campaign.name} ${newStatus === 'active' ? 'activated' : 'paused'}`, 
+          'success'
+        );
+        break;
     }
+  };
+
+  const handleDateRange = () => {
+    setShowDateRangeModal(true);
+    showToast('Select date range for analytics', 'info');
+  };
+
+  const handleABTesting = () => {
+    setShowABTestModal(true);
+    showToast('Opening A/B testing configuration', 'info');
+  };
+
+  const handleTemplateLibrary = () => {
+    setShowTemplateModal(true);
+    showToast('Browse campaign templates', 'info');
+  };
+
+  const handleCreateCampaign = () => {
+    setShowCreateCampaignModal(true);
+    showToast('Create a new campaign', 'info');
+  };
+
+  const handleFilter = () => {
+    setShowFilterModal(true);
+    showToast('Filter campaigns', 'info');
   };
 
   return (
@@ -289,13 +344,13 @@ export default function QuantumCampaigns() {
             </div>
           </div>
           <div className="header-actions">
-            <button className="btn">
+            <button className="btn" onClick={handleDateRange}>
               <Calendar size={16} />
               Date Range
             </button>
-            <button className="btn">A/B Testing</button>
-            <button className="btn">Template Library</button>
-            <button className="btn btn-primary">
+            <button className="btn" onClick={handleABTesting}>A/B Testing</button>
+            <button className="btn" onClick={handleTemplateLibrary}>Template Library</button>
+            <button className="btn btn-primary" onClick={handleCreateCampaign}>
               <Plus size={16} />
               Create Campaign
             </button>
@@ -378,7 +433,7 @@ export default function QuantumCampaigns() {
                 List
               </button>
             </div>
-            <button className="btn">
+            <button className="btn" onClick={handleFilter}>
               <Filter size={16} />
               More Filters
             </button>
@@ -404,9 +459,365 @@ export default function QuantumCampaigns() {
       />
 
       {/* AI Toggle Button */}
-      <button className="ai-toggle" onClick={() => setShowAI(!showAI)}>
+      <button 
+        className="ai-toggle" 
+        onClick={() => {
+          setShowAI(!showAI);
+          showToast(
+            showAI ? 'AI predictions hidden' : 'AI predictions activated', 
+            'info'
+          );
+        }}
+      >
         <Layers size={24} />
       </button>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`toast ${toastMessage.type}`}>
+          <div className="toast-content">
+            {toastMessage.type === 'success' && <CheckCircle size={18} />}
+            {toastMessage.type === 'error' && <AlertCircle size={18} />}
+            {toastMessage.type === 'info' && <Info size={18} />}
+            <span>{toastMessage.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Date Range Modal */}
+      {showDateRangeModal && (
+        <div className="modal-overlay" onClick={() => setShowDateRangeModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Select Date Range</h3>
+              <button onClick={() => setShowDateRangeModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="date-options">
+                <button className="date-option" onClick={() => {
+                  setDateRange('today');
+                  setShowDateRangeModal(false);
+                  showToast('Date range set to Today', 'success');
+                }}>Today</button>
+                <button className="date-option" onClick={() => {
+                  setDateRange('yesterday');
+                  setShowDateRangeModal(false);
+                  showToast('Date range set to Yesterday', 'success');
+                }}>Yesterday</button>
+                <button className="date-option" onClick={() => {
+                  setDateRange('last7days');
+                  setShowDateRangeModal(false);
+                  showToast('Date range set to Last 7 days', 'success');
+                }}>Last 7 days</button>
+                <button className="date-option active" onClick={() => {
+                  setDateRange('last30days');
+                  setShowDateRangeModal(false);
+                  showToast('Date range set to Last 30 days', 'success');
+                }}>Last 30 days</button>
+                <button className="date-option" onClick={() => {
+                  setDateRange('custom');
+                  showToast('Custom date range feature coming soon', 'info');
+                }}>Custom Range</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* A/B Testing Modal */}
+      {showABTestModal && (
+        <div className="modal-overlay" onClick={() => setShowABTestModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>A/B Testing Configuration</h3>
+              <button onClick={() => setShowABTestModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="ab-test-section">
+                <h4>Test Variables</h4>
+                <div className="test-options">
+                  <label className="checkbox-label">
+                    <input type="checkbox" defaultChecked />
+                    <span>Subject Line</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" defaultChecked />
+                    <span>Send Time</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>From Name</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>Content Variation</span>
+                  </label>
+                </div>
+              </div>
+              <div className="ab-test-section">
+                <h4>Test Split</h4>
+                <div className="split-config">
+                  <div className="split-item">
+                    <label>Variant A</label>
+                    <input type="range" min="0" max="100" defaultValue="50" />
+                    <span>50%</span>
+                  </div>
+                  <div className="split-item">
+                    <label>Variant B</label>
+                    <input type="range" min="0" max="100" defaultValue="50" />
+                    <span>50%</span>
+                  </div>
+                </div>
+              </div>
+              <button className="modal-button primary" onClick={() => {
+                setShowABTestModal(false);
+                showToast('A/B test configuration saved', 'success');
+              }}>
+                <CheckCircle size={16} />
+                Save Configuration
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Template Library Modal */}
+      {showTemplateModal && (
+        <div className="modal-overlay" onClick={() => setShowTemplateModal(false)}>
+          <div className="modal large" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Campaign Templates</h3>
+              <button onClick={() => setShowTemplateModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="template-grid">
+                <div className="template-card" onClick={() => {
+                  setShowTemplateModal(false);
+                  showToast('Welcome Series template selected', 'success');
+                }}>
+                  <div className="template-icon">
+                    <Mail size={24} />
+                  </div>
+                  <h4>Welcome Series</h4>
+                  <p>5-email onboarding sequence for new users</p>
+                </div>
+                <div className="template-card" onClick={() => {
+                  setShowTemplateModal(false);
+                  showToast('Product Launch template selected', 'success');
+                }}>
+                  <div className="template-icon">
+                    <Send size={24} />
+                  </div>
+                  <h4>Product Launch</h4>
+                  <p>Multi-channel campaign for new products</p>
+                </div>
+                <div className="template-card" onClick={() => {
+                  setShowTemplateModal(false);
+                  showToast('Re-engagement template selected', 'success');
+                }}>
+                  <div className="template-icon">
+                    <RefreshCw size={24} />
+                  </div>
+                  <h4>Re-engagement</h4>
+                  <p>Win back inactive customers</p>
+                </div>
+                <div className="template-card" onClick={() => {
+                  setShowTemplateModal(false);
+                  showToast('Holiday Campaign template selected', 'success');
+                }}>
+                  <div className="template-icon">
+                    <Calendar size={24} />
+                  </div>
+                  <h4>Holiday Campaign</h4>
+                  <p>Seasonal promotional campaigns</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Campaign Modal */}
+      {showCreateCampaignModal && (
+        <div className="modal-overlay" onClick={() => setShowCreateCampaignModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Create New Campaign</h3>
+              <button onClick={() => setShowCreateCampaignModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="form-group">
+                <label>Campaign Name</label>
+                <input type="text" placeholder="Enter campaign name" />
+              </div>
+              <div className="form-group">
+                <label>Description</label>
+                <textarea placeholder="Describe your campaign objectives" rows="3"></textarea>
+              </div>
+              <div className="form-group">
+                <label>Type</label>
+                <select>
+                  <option>Email Campaign</option>
+                  <option>SMS Campaign</option>
+                  <option>Multi-channel</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Target Audience</label>
+                <select>
+                  <option>All Contacts</option>
+                  <option>Enterprise Segment</option>
+                  <option>SMB Segment</option>
+                  <option>Custom Segment</option>
+                </select>
+              </div>
+              <button className="modal-button primary" onClick={() => {
+                setShowCreateCampaignModal(false);
+                showToast('Campaign created successfully', 'success');
+              }}>
+                <Plus size={16} />
+                Create Campaign
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Modal */}
+      {showFilterModal && (
+        <div className="modal-overlay" onClick={() => setShowFilterModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Filter Campaigns</h3>
+              <button onClick={() => setShowFilterModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="filter-section">
+                <h4>Status</h4>
+                <div className="filter-options">
+                  <label className="checkbox-label">
+                    <input type="checkbox" defaultChecked />
+                    <span>Active</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" defaultChecked />
+                    <span>Paused</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>Completed</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>Draft</span>
+                  </label>
+                </div>
+              </div>
+              <div className="filter-section">
+                <h4>Channel</h4>
+                <div className="filter-options">
+                  <label className="checkbox-label">
+                    <input type="checkbox" defaultChecked />
+                    <span>Email</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>SMS</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>Multi-channel</span>
+                  </label>
+                </div>
+              </div>
+              <button className="modal-button primary" onClick={() => {
+                setShowFilterModal(false);
+                showToast('Filters applied', 'success');
+              }}>
+                <Filter size={16} />
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Analytics Modal */}
+      {showAnalyticsModal && selectedCampaign && (
+        <div className="modal-overlay" onClick={() => setShowAnalyticsModal(false)}>
+          <div className="modal large" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Campaign Analytics - {selectedCampaign.name}</h3>
+              <button onClick={() => setShowAnalyticsModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="analytics-grid">
+                <div className="analytics-card">
+                  <h4>Performance Overview</h4>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={generatePerformanceData().slice(-7)}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                      <XAxis dataKey="day" stroke="rgba(255,255,255,0.5)" />
+                      <YAxis stroke="rgba(255,255,255,0.5)" />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="sent" stroke="#8b5cf6" />
+                      <Line type="monotone" dataKey="opened" stroke="#10b981" />
+                      <Line type="monotone" dataKey="clicked" stroke="#f59e0b" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="analytics-card">
+                  <h4>Engagement Funnel</h4>
+                  <div className="funnel-metrics">
+                    <div className="funnel-item">
+                      <span>Sent</span>
+                      <strong>{selectedCampaign.metrics.sent}</strong>
+                    </div>
+                    <div className="funnel-item">
+                      <span>Opened</span>
+                      <strong>{selectedCampaign.metrics.opened}</strong>
+                    </div>
+                    <div className="funnel-item">
+                      <span>Clicked</span>
+                      <strong>{selectedCampaign.metrics.clicked}</strong>
+                    </div>
+                    <div className="funnel-item">
+                      <span>Converted</span>
+                      <strong>{selectedCampaign.metrics.converted}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="analytics-actions">
+                <button className="modal-button" onClick={() => {
+                  showToast('Exporting analytics report...', 'info');
+                }}>
+                  <Download size={16} />
+                  Export Report
+                </button>
+                <button className="modal-button" onClick={() => {
+                  showToast('Sharing analytics...', 'info');
+                }}>
+                  <Share2 size={16} />
+                  Share
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .quantum-campaigns {
@@ -1014,6 +1425,377 @@ export default function QuantumCampaigns() {
           
           .ai-sidebar {
             width: 100%;
+          }
+        }
+
+        /* Toast Styles */
+        .toast {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          background: rgba(26, 26, 46, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 1rem 1.5rem;
+          animation: slideIn 0.3s ease;
+          z-index: 1000;
+        }
+
+        .toast-content {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          color: white;
+        }
+
+        .toast.success {
+          border-color: rgba(16, 185, 129, 0.3);
+          background: rgba(16, 185, 129, 0.1);
+        }
+
+        .toast.error {
+          border-color: rgba(239, 68, 68, 0.3);
+          background: rgba(239, 68, 68, 0.1);
+        }
+
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(10px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 999;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+          background: rgba(26, 26, 46, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 20px;
+          width: 90%;
+          max-width: 500px;
+          max-height: 90vh;
+          overflow: hidden;
+          animation: scaleIn 0.3s ease;
+        }
+
+        .modal.large {
+          max-width: 800px;
+        }
+
+        .modal-header {
+          padding: 1.5rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .modal-header h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+
+        .modal-header button {
+          background: none;
+          border: none;
+          color: rgba(255, 255, 255, 0.6);
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .modal-header button:hover {
+          color: white;
+        }
+
+        .modal-content {
+          padding: 1.5rem;
+          overflow-y: auto;
+          max-height: calc(90vh - 80px);
+        }
+
+        /* Form Elements */
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+          width: 100%;
+          padding: 0.75rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: white;
+          font-size: 1rem;
+          transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+          outline: none;
+          border-color: #8b5cf6;
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-button {
+          padding: 0.75rem 1.5rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .modal-button:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: white;
+        }
+
+        .modal-button.primary {
+          background: linear-gradient(135deg, #8b5cf6, #6366f1);
+          border: none;
+          color: white;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .modal-button.primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Date Options */
+        .date-options {
+          display: grid;
+          gap: 0.75rem;
+        }
+
+        .date-option {
+          padding: 0.75rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.8);
+          cursor: pointer;
+          transition: all 0.2s;
+          text-align: center;
+        }
+
+        .date-option:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: white;
+        }
+
+        .date-option.active {
+          background: rgba(139, 92, 246, 0.2);
+          border-color: rgba(139, 92, 246, 0.5);
+          color: white;
+        }
+
+        /* A/B Test Modal */
+        .ab-test-section {
+          margin-bottom: 2rem;
+        }
+
+        .ab-test-section h4 {
+          margin-bottom: 1rem;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .test-options {
+          display: grid;
+          gap: 0.75rem;
+        }
+
+        .checkbox-label {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          cursor: pointer;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+          width: auto;
+          margin: 0;
+        }
+
+        .split-config {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .split-item {
+          display: grid;
+          grid-template-columns: 80px 1fr 50px;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .split-item label {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+        }
+
+        .split-item input[type="range"] {
+          width: 100%;
+        }
+
+        /* Template Grid */
+        .template-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 1.5rem;
+        }
+
+        .template-card {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          padding: 1.5rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-align: center;
+        }
+
+        .template-card:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(139, 92, 246, 0.3);
+          transform: translateY(-2px);
+        }
+
+        .template-icon {
+          width: 60px;
+          height: 60px;
+          background: linear-gradient(135deg, #8b5cf6, #6366f1);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 1rem;
+          color: white;
+        }
+
+        .template-card h4 {
+          margin-bottom: 0.5rem;
+          color: white;
+        }
+
+        .template-card p {
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.6);
+          line-height: 1.4;
+        }
+
+        /* Filter Modal */
+        .filter-section {
+          margin-bottom: 1.5rem;
+        }
+
+        .filter-section h4 {
+          margin-bottom: 0.75rem;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .filter-options {
+          display: grid;
+          gap: 0.5rem;
+        }
+
+        /* Analytics Modal */
+        .analytics-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          padding: 1.25rem;
+        }
+
+        .analytics-card h4 {
+          margin-bottom: 1rem;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .funnel-metrics {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .funnel-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 8px;
+        }
+
+        .funnel-item span {
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.875rem;
+        }
+
+        .funnel-item strong {
+          font-size: 1.125rem;
+          color: white;
+        }
+
+        .analytics-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+          from {
+            transform: scale(0.9);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
           }
         }
       `}</style>

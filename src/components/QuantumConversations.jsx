@@ -8,7 +8,7 @@ import {
   BarChart3, PieChart, Shield, Headphones, Video, Send, ThumbsUp, ThumbsDown,
   Heart, Smile, Frown, Meh, ArrowUp, ArrowDown, GitBranch, Layers, Command,
   FileText, Link, Globe, Linkedin, Twitter, MessageCircle, PhoneCall,
-  Bot, Gauge, Lightbulb, BookOpen, Flag, Timer, Repeat, Archive
+  Bot, Gauge, Lightbulb, BookOpen, Flag, Timer, Repeat, Archive, X
 } from 'lucide-react';
 import { 
   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart as RePieChart, 
@@ -763,6 +763,12 @@ const ConversationAnalytics = ({ conversations }) => {
 // Main Conversations Component
 export default function QuantumConversations() {
   const navigate = useNavigate();
+  const [showManageChannelsModal, setShowManageChannelsModal] = useState(false);
+  const [showNewConversationModal, setShowNewConversationModal] = useState(false);
+  const [showResponseModal, setShowResponseModal] = useState(false);
+  const [showCallModal, setShowCallModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [activeConversation, setActiveConversation] = useState(null);
   const [conversations, setConversations] = useState([
     {
       id: 1,
@@ -872,8 +878,27 @@ export default function QuantumConversations() {
     setSelectedConversation(selected);
   };
 
+  // Toast helper
+  const showToast = (message, type = 'info') => {
+    setToastMessage({ message, type });
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const handleConversationAction = (action, conversation) => {
-    console.log(`Action: ${action} on conversation:`, conversation);
+    switch(action) {
+      case 'respond':
+        setActiveConversation(conversation);
+        setShowResponseModal(true);
+        showToast(`Opening response for ${conversation.customerName}`, 'info');
+        break;
+      case 'call':
+        setActiveConversation(conversation);
+        setShowCallModal(true);
+        showToast(`Initiating call with ${conversation.customerName}`, 'info');
+        break;
+      default:
+        showToast(`Action: ${action}`, 'info');
+    }
   };
 
   const handleRefreshAnalysis = () => {
@@ -884,11 +909,47 @@ export default function QuantumConversations() {
         analysis: intelligenceEngine.analyzeConversation(selectedConversation)
       };
       setSelectedConversation(updated);
+      showToast('Analysis refreshed successfully', 'success');
     }
   };
 
   const handleSuggestionUse = (suggestion) => {
-    console.log('Using suggestion:', suggestion);
+    showToast(`Applied suggestion: ${suggestion.type}`, 'success');
+    // In a real app, this would apply the suggestion to the conversation
+  };
+
+  const handleManageChannels = () => {
+    setShowManageChannelsModal(true);
+    showToast('Opening channel management...', 'info');
+  };
+
+  const handleNewConversation = () => {
+    setShowNewConversationModal(true);
+    showToast('Create new conversation', 'info');
+  };
+
+  const handleSendResponse = (response) => {
+    showToast(`Response sent to ${activeConversation?.customerName}`, 'success');
+    setShowResponseModal(false);
+    // Update conversation with new message
+    const updatedConversations = conversations.map(conv => 
+      conv.id === activeConversation?.id 
+        ? { ...conv, lastMessage: response, lastUpdate: 'just now', messageCount: conv.messageCount + 1 }
+        : conv
+    );
+    setConversations(updatedConversations);
+  };
+
+  const handleInitiateCall = () => {
+    showToast(`Calling ${activeConversation?.customerName}...`, 'success');
+    setShowCallModal(false);
+    // Update conversation status
+    const updatedConversations = conversations.map(conv => 
+      conv.id === activeConversation?.id 
+        ? { ...conv, channel: 'phone', status: 'active' }
+        : conv
+    );
+    setConversations(updatedConversations);
   };
 
   return (
@@ -919,7 +980,7 @@ export default function QuantumConversations() {
             </div>
 
             <div className="header-actions">
-              <button className="manage-channels-btn">
+              <button className="manage-channels-btn" onClick={handleManageChannels}>
                 <Settings size={16} />
                 Manage Channels
               </button>
@@ -935,7 +996,7 @@ export default function QuantumConversations() {
         <div className="conversations-panel">
           <div className="panel-header">
             <h2>Conversations</h2>
-            <button className="new-conversation-btn">
+            <button className="new-conversation-btn" onClick={handleNewConversation}>
               <Plus size={16} />
               New
             </button>
@@ -2070,6 +2131,627 @@ export default function QuantumConversations() {
           
           .overview-metrics {
             grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`quantum-toast ${toastMessage.type}`}>
+          <div className="toast-content">
+            {toastMessage.type === 'success' && <CheckCircle size={18} />}
+            {toastMessage.type === 'error' && <AlertCircle size={18} />}
+            {toastMessage.type === 'info' && <Info size={18} />}
+            <span>{toastMessage.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Manage Channels Modal */}
+      {showManageChannelsModal && (
+        <div className="quantum-modal-overlay" onClick={() => setShowManageChannelsModal(false)}>
+          <div className="quantum-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Manage Communication Channels</h3>
+              <button onClick={() => setShowManageChannelsModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="channels-grid">
+                <div className="channel-card">
+                  <div className="channel-icon">
+                    <MessageSquare size={24} />
+                  </div>
+                  <h4>Live Chat</h4>
+                  <p>Web-based chat widget</p>
+                  <label className="channel-toggle">
+                    <input type="checkbox" defaultChecked />
+                    <span className="toggle-switch"></span>
+                  </label>
+                </div>
+                <div className="channel-card">
+                  <div className="channel-icon">
+                    <Mail size={24} />
+                  </div>
+                  <h4>Email</h4>
+                  <p>Support email integration</p>
+                  <label className="channel-toggle">
+                    <input type="checkbox" defaultChecked />
+                    <span className="toggle-switch"></span>
+                  </label>
+                </div>
+                <div className="channel-card">
+                  <div className="channel-icon">
+                    <Phone size={24} />
+                  </div>
+                  <h4>Phone</h4>
+                  <p>Voice call support</p>
+                  <label className="channel-toggle">
+                    <input type="checkbox" defaultChecked />
+                    <span className="toggle-switch"></span>
+                  </label>
+                </div>
+                <div className="channel-card">
+                  <div className="channel-icon">
+                    <Globe size={24} />
+                  </div>
+                  <h4>Social Media</h4>
+                  <p>Twitter, Facebook, LinkedIn</p>
+                  <label className="channel-toggle">
+                    <input type="checkbox" />
+                    <span className="toggle-switch"></span>
+                  </label>
+                </div>
+              </div>
+              <button 
+                className="quantum-button primary"
+                onClick={() => {
+                  setShowManageChannelsModal(false);
+                  showToast('Channel settings updated', 'success');
+                }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Conversation Modal */}
+      {showNewConversationModal && (
+        <div className="quantum-modal-overlay" onClick={() => setShowNewConversationModal(false)}>
+          <div className="quantum-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Start New Conversation</h3>
+              <button onClick={() => setShowNewConversationModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="form-group">
+                <label>Customer Name</label>
+                <input type="text" placeholder="Enter customer name" />
+              </div>
+              <div className="form-group">
+                <label>Company</label>
+                <input type="text" placeholder="Enter company name" />
+              </div>
+              <div className="form-group">
+                <label>Channel</label>
+                <select>
+                  <option value="chat">Chat</option>
+                  <option value="email">Email</option>
+                  <option value="phone">Phone</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Initial Message</label>
+                <textarea placeholder="Type your message..." rows="4"></textarea>
+              </div>
+              <button 
+                className="quantum-button primary"
+                onClick={() => {
+                  setShowNewConversationModal(false);
+                  showToast('New conversation started', 'success');
+                }}
+              >
+                Start Conversation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Response Modal */}
+      {showResponseModal && activeConversation && (
+        <div className="quantum-modal-overlay" onClick={() => setShowResponseModal(false)}>
+          <div className="quantum-modal large" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Respond to {activeConversation.customerName}</h3>
+              <button onClick={() => setShowResponseModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="conversation-context">
+                <div className="context-header">
+                  <Building size={16} />
+                  <span>{activeConversation.company}</span>
+                  <span className="separator">•</span>
+                  <span>{activeConversation.channel}</span>
+                </div>
+                <div className="last-message">
+                  <p>{activeConversation.lastMessage}</p>
+                  <span className="timestamp">{activeConversation.lastUpdate}</span>
+                </div>
+              </div>
+              <div className="response-area">
+                <textarea 
+                  placeholder="Type your response..."
+                  rows="6"
+                  className="response-input"
+                ></textarea>
+                <div className="response-actions">
+                  <div className="response-tools">
+                    <button className="tool-btn" title="Attach file">
+                      <FileText size={16} />
+                    </button>
+                    <button className="tool-btn" title="Add emoji">
+                      <Smile size={16} />
+                    </button>
+                    <button className="tool-btn" title="Insert template">
+                      <Layers size={16} />
+                    </button>
+                  </div>
+                  <button 
+                    className="quantum-button primary"
+                    onClick={() => handleSendResponse('Response sent')}
+                  >
+                    <Send size={16} />
+                    Send Response
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Call Modal */}
+      {showCallModal && activeConversation && (
+        <div className="quantum-modal-overlay" onClick={() => setShowCallModal(false)}>
+          <div className="quantum-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Call {activeConversation.customerName}</h3>
+              <button onClick={() => setShowCallModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="call-info">
+                <div className="customer-avatar large">
+                  {activeConversation.customerInitials}
+                </div>
+                <h4>{activeConversation.customerName}</h4>
+                <p>{activeConversation.company}</p>
+              </div>
+              <div className="call-options">
+                <button className="call-option-btn">
+                  <Phone size={20} />
+                  <span>Voice Call</span>
+                </button>
+                <button className="call-option-btn">
+                  <Video size={20} />
+                  <span>Video Call</span>
+                </button>
+              </div>
+              <button 
+                className="quantum-button primary"
+                onClick={handleInitiateCall}
+              >
+                <PhoneCall size={16} />
+                Start Call
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Additional CSS for new elements */}
+      <style jsx>{`
+        /* Toast Styles */
+        .quantum-toast {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          background: rgba(26, 26, 46, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 1rem 1.5rem;
+          animation: slideIn 0.3s ease;
+          z-index: 1000;
+        }
+
+        .toast-content {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          color: white;
+        }
+
+        .quantum-toast.success {
+          border-color: rgba(16, 185, 129, 0.3);
+          background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quantum-toast.error {
+          border-color: rgba(239, 68, 68, 0.3);
+          background: rgba(239, 68, 68, 0.1);
+        }
+
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        /* Modal Styles */
+        .quantum-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(10px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 999;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .quantum-modal {
+          background: rgba(26, 26, 46, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 20px;
+          width: 90%;
+          max-width: 500px;
+          max-height: 90vh;
+          overflow: hidden;
+          animation: scaleIn 0.3s ease;
+        }
+
+        .quantum-modal.large {
+          max-width: 700px;
+        }
+
+        .modal-header {
+          padding: 1.5rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .modal-header h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+
+        .modal-header button {
+          background: none;
+          border: none;
+          color: rgba(255, 255, 255, 0.6);
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .modal-header button:hover {
+          color: white;
+        }
+
+        .modal-content {
+          padding: 1.5rem;
+          overflow-y: auto;
+          max-height: calc(90vh - 80px);
+        }
+
+        /* Form Styles */
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+          width: 100%;
+          padding: 0.75rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: white;
+          font-size: 1rem;
+          transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: #8b5cf6;
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Button Styles */
+        .quantum-button {
+          padding: 0.75rem 1.5rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .quantum-button:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: white;
+        }
+
+        .quantum-button.primary {
+          background: linear-gradient(135deg, #8b5cf6, #6366f1);
+          border: none;
+          color: white;
+        }
+
+        .quantum-button.primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Channels Grid */
+        .channels-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        .channel-card {
+          padding: 1.5rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          text-align: center;
+          position: relative;
+        }
+
+        .channel-icon {
+          width: 48px;
+          height: 48px;
+          margin: 0 auto 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(139, 92, 246, 0.1);
+          border-radius: 12px;
+          color: #8b5cf6;
+        }
+
+        .channel-card h4 {
+          font-size: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .channel-card p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 1rem;
+        }
+
+        .channel-toggle {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+        }
+
+        .channel-toggle input {
+          display: none;
+        }
+
+        .toggle-switch {
+          display: block;
+          width: 40px;
+          height: 22px;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 11px;
+          position: relative;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        .toggle-switch::before {
+          content: '';
+          position: absolute;
+          width: 18px;
+          height: 18px;
+          background: white;
+          border-radius: 50%;
+          top: 2px;
+          left: 2px;
+          transition: transform 0.3s;
+        }
+
+        .channel-toggle input:checked + .toggle-switch {
+          background: #8b5cf6;
+        }
+
+        .channel-toggle input:checked + .toggle-switch::before {
+          transform: translateX(18px);
+        }
+
+        /* Response Modal Styles */
+        .conversation-context {
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 12px;
+          padding: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .context-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 0.75rem;
+        }
+
+        .separator {
+          color: rgba(255, 255, 255, 0.3);
+        }
+
+        .last-message p {
+          font-size: 0.9375rem;
+          line-height: 1.5;
+          margin-bottom: 0.5rem;
+        }
+
+        .timestamp {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        .response-area {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .response-input {
+          width: 100%;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          color: white;
+          font-size: 1rem;
+          resize: vertical;
+        }
+
+        .response-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .response-tools {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .tool-btn {
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.6);
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: white;
+        }
+
+        /* Call Modal Styles */
+        .call-info {
+          text-align: center;
+          padding: 2rem 0;
+        }
+
+        .customer-avatar.large {
+          width: 80px;
+          height: 80px;
+          font-size: 1.5rem;
+          margin: 0 auto 1rem;
+        }
+
+        .call-info h4 {
+          font-size: 1.25rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .call-info p {
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .call-options {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+          margin: 2rem 0;
+        }
+
+        .call-option-btn {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 1.5rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          color: rgba(255, 255, 255, 0.8);
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .call-option-btn:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: #8b5cf6;
+          color: white;
+        }
+
+        .call-option-btn svg {
+          color: #8b5cf6;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+          from {
+            transform: scale(0.9);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
           }
         }
       `}</style>

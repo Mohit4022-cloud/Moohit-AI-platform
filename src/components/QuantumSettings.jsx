@@ -4,7 +4,8 @@ import {
   Settings, Download, Layers, Shield, Sun, Moon, Monitor, Save, RotateCcw,
   FileText, Check, ChevronDown, Activity, HardDrive, Link2, Sparkles,
   User, Lock, Bell, Building, CreditCard, Eye, AlertCircle, Info,
-  Globe, Calendar, DollarSign, Clock, Zap, Database, Code, GitBranch
+  Globe, Calendar, DollarSign, Clock, Zap, Database, Code, GitBranch,
+  Upload, X
 } from 'lucide-react';
 
 // Tab configuration
@@ -85,6 +86,9 @@ export default function QuantumSettings() {
   const [activeTab, setActiveTab] = useState('general');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [saveStatus, setSaveStatus] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [showChangelogModal, setShowChangelogModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [settings, setSettings] = useState({
     companyName: 'TechCorp Inc',
     timezone: 'Eastern Time (ET)',
@@ -121,6 +125,12 @@ export default function QuantumSettings() {
     setTimeout(() => setSaveStatus(false), 3000);
   };
 
+  // Toast helper
+  const showToast = (message, type = 'info') => {
+    setToastMessage({ message, type });
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const handleExportSettings = () => {
     const dataStr = JSON.stringify(settings, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -131,6 +141,13 @@ export default function QuantumSettings() {
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
+    
+    showToast('Settings exported successfully', 'success');
+  };
+
+  const handleImportSettings = () => {
+    setShowImportModal(true);
+    showToast('Upload your settings file', 'info');
   };
 
   const handleResetToDefaults = () => {
@@ -149,7 +166,18 @@ export default function QuantumSettings() {
         dataRetention: 90
       });
       showSaveStatus();
+      showToast('Settings reset to defaults', 'success');
     }
+  };
+
+  const handleViewChangelog = () => {
+    setShowChangelogModal(true);
+    showToast('Loading changelog...', 'info');
+  };
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    showToast(`Switched to ${TABS.find(t => t.id === tabId)?.label} settings`, 'info');
   };
 
   // Keyboard shortcuts
@@ -315,7 +343,616 @@ export default function QuantumSettings() {
           </>
         );
       
-      // Add other tab content here
+      case 'users':
+        return (
+          <>
+            <SettingsSection
+              title="User Management"
+              description="Manage users, roles, and permissions"
+            >
+              <div className="users-grid">
+                <div className="user-card">
+                  <div className="user-avatar">JD</div>
+                  <div className="user-info">
+                    <h4>John Doe</h4>
+                    <p>john.doe@techcorp.com</p>
+                    <span className="user-role">Admin</span>
+                  </div>
+                  <button className="user-action">Edit</button>
+                </div>
+                <div className="user-card">
+                  <div className="user-avatar">SM</div>
+                  <div className="user-info">
+                    <h4>Sarah Miller</h4>
+                    <p>sarah.miller@techcorp.com</p>
+                    <span className="user-role">Manager</span>
+                  </div>
+                  <button className="user-action">Edit</button>
+                </div>
+              </div>
+              <button className="add-user-btn">
+                <User size={16} />
+                Add New User
+              </button>
+            </SettingsSection>
+            <SettingsSection
+              title="Roles & Permissions"
+              description="Define user roles and access levels"
+            >
+              <div className="roles-list">
+                <div className="role-item">
+                  <h4>Admin</h4>
+                  <p>Full system access</p>
+                  <span className="user-count">2 users</span>
+                </div>
+                <div className="role-item">
+                  <h4>Manager</h4>
+                  <p>Manage campaigns and view analytics</p>
+                  <span className="user-count">5 users</span>
+                </div>
+                <div className="role-item">
+                  <h4>Agent</h4>
+                  <p>Handle customer interactions</p>
+                  <span className="user-count">12 users</span>
+                </div>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
+      case 'security':
+        return (
+          <>
+            <SettingsSection
+              title="Authentication"
+              description="Configure authentication and access control"
+            >
+              <div className="form-grid">
+                <Switch
+                  label="Require Two-Factor Authentication"
+                  checked={settings.require2FA || false}
+                  onChange={(value) => handleSettingChange('require2FA', value)}
+                />
+                <Switch
+                  label="Single Sign-On (SSO)"
+                  checked={settings.sso || false}
+                  onChange={(value) => handleSettingChange('sso', value)}
+                />
+                <div className="form-group">
+                  <label className="label">Session Timeout (minutes)</label>
+                  <input
+                    type="number"
+                    className="input"
+                    defaultValue="30"
+                    onChange={(e) => handleSettingChange('sessionTimeout', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="label">Password Policy</label>
+                  <select className="select">
+                    <option>Strong (12+ chars, mixed case, numbers, symbols)</option>
+                    <option>Medium (8+ chars, mixed case, numbers)</option>
+                    <option>Basic (8+ chars)</option>
+                  </select>
+                </div>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="Security Settings"
+              description="Advanced security configurations"
+            >
+              <div className="form-grid">
+                <Switch
+                  label="IP Whitelist"
+                  checked={settings.ipWhitelist || false}
+                  onChange={(value) => handleSettingChange('ipWhitelist', value)}
+                />
+                <Switch
+                  label="Audit Failed Login Attempts"
+                  checked={settings.auditFailedLogins || true}
+                  onChange={(value) => handleSettingChange('auditFailedLogins', value)}
+                />
+                <div className="form-group full-width">
+                  <label className="label">Allowed IP Addresses</label>
+                  <textarea 
+                    className="input" 
+                    rows="3" 
+                    placeholder="Enter one IP address per line"
+                  />
+                </div>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
+      case 'compliance':
+        return (
+          <>
+            <SettingsSection
+              title="Data Protection"
+              description="GDPR, CCPA, and privacy compliance settings"
+            >
+              <div className="form-grid">
+                <Switch
+                  label="GDPR Compliance Mode"
+                  checked={settings.gdpr || true}
+                  onChange={(value) => handleSettingChange('gdpr', value)}
+                />
+                <Switch
+                  label="CCPA Compliance Mode"
+                  checked={settings.ccpa || true}
+                  onChange={(value) => handleSettingChange('ccpa', value)}
+                />
+                <Switch
+                  label="Right to be Forgotten"
+                  checked={settings.rightToForget || true}
+                  onChange={(value) => handleSettingChange('rightToForget', value)}
+                />
+                <Switch
+                  label="Data Portability"
+                  checked={settings.dataPortability || true}
+                  onChange={(value) => handleSettingChange('dataPortability', value)}
+                />
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="Compliance Reports"
+              description="Generate and download compliance documentation"
+            >
+              <div className="compliance-actions">
+                <button className="compliance-btn">
+                  <FileText size={16} />
+                  Generate GDPR Report
+                </button>
+                <button className="compliance-btn">
+                  <FileText size={16} />
+                  Generate CCPA Report
+                </button>
+                <button className="compliance-btn">
+                  <FileText size={16} />
+                  Data Processing Agreement
+                </button>
+                <button className="compliance-btn">
+                  <FileText size={16} />
+                  Privacy Policy Template
+                </button>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
+      case 'notifications':
+        return (
+          <>
+            <SettingsSection
+              title="Email Notifications"
+              description="Configure email notification preferences"
+            >
+              <div className="notification-list">
+                <div className="notification-item">
+                  <div>
+                    <h4>System Alerts</h4>
+                    <p>Critical system events and downtime</p>
+                  </div>
+                  <Switch
+                    checked={true}
+                    onChange={() => {}}
+                  />
+                </div>
+                <div className="notification-item">
+                  <div>
+                    <h4>Campaign Performance</h4>
+                    <p>Daily campaign metrics and insights</p>
+                  </div>
+                  <Switch
+                    checked={true}
+                    onChange={() => {}}
+                  />
+                </div>
+                <div className="notification-item">
+                  <div>
+                    <h4>Lead Alerts</h4>
+                    <p>High-value lead notifications</p>
+                  </div>
+                  <Switch
+                    checked={false}
+                    onChange={() => {}}
+                  />
+                </div>
+                <div className="notification-item">
+                  <div>
+                    <h4>Weekly Reports</h4>
+                    <p>Summary of weekly performance</p>
+                  </div>
+                  <Switch
+                    checked={true}
+                    onChange={() => {}}
+                  />
+                </div>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="In-App Notifications"
+              description="Configure in-app notification behavior"
+            >
+              <div className="form-grid">
+                <Switch
+                  label="Desktop Notifications"
+                  checked={settings.desktopNotifications || true}
+                  onChange={(value) => handleSettingChange('desktopNotifications', value)}
+                />
+                <Switch
+                  label="Sound Alerts"
+                  checked={settings.soundAlerts || false}
+                  onChange={(value) => handleSettingChange('soundAlerts', value)}
+                />
+                <div className="form-group">
+                  <label className="label">Notification Position</label>
+                  <select className="select">
+                    <option>Top Right</option>
+                    <option>Top Left</option>
+                    <option>Bottom Right</option>
+                    <option>Bottom Left</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="label">Auto-dismiss (seconds)</label>
+                  <input type="number" className="input" defaultValue="5" />
+                </div>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
+      case 'integrations':
+        return (
+          <>
+            <SettingsSection
+              title="Connected Integrations"
+              description="Manage your third-party integrations"
+            >
+              <div className="integrations-grid">
+                <div className="integration-card connected">
+                  <div className="integration-icon">
+                    <Mail size={24} />
+                  </div>
+                  <h4>Gmail</h4>
+                  <p>Email sync enabled</p>
+                  <button className="integration-btn">Configure</button>
+                </div>
+                <div className="integration-card connected">
+                  <div className="integration-icon">
+                    <MessageSquare size={24} />
+                  </div>
+                  <h4>Slack</h4>
+                  <p>Real-time notifications</p>
+                  <button className="integration-btn">Configure</button>
+                </div>
+                <div className="integration-card">
+                  <div className="integration-icon">
+                    <Database size={24} />
+                  </div>
+                  <h4>Salesforce</h4>
+                  <p>Not connected</p>
+                  <button className="integration-btn primary">Connect</button>
+                </div>
+                <div className="integration-card">
+                  <div className="integration-icon">
+                    <Zap size={24} />
+                  </div>
+                  <h4>Zapier</h4>
+                  <p>Not connected</p>
+                  <button className="integration-btn primary">Connect</button>
+                </div>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="API Configuration"
+              description="Manage API keys and webhooks"
+            >
+              <div className="api-section">
+                <div className="api-key-item">
+                  <div>
+                    <h4>Production API Key</h4>
+                    <p className="api-key">sk_live_****************************7a9b</p>
+                  </div>
+                  <button className="api-action">Regenerate</button>
+                </div>
+                <div className="api-key-item">
+                  <div>
+                    <h4>Test API Key</h4>
+                    <p className="api-key">sk_test_****************************4c2d</p>
+                  </div>
+                  <button className="api-action">Regenerate</button>
+                </div>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
+      case 'whitelabel':
+        return (
+          <>
+            <SettingsSection
+              title="Branding"
+              description="Customize the platform with your brand"
+            >
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label className="label">Brand Name</label>
+                  <input
+                    type="text"
+                    className="input"
+                    defaultValue="TechCorp CRM"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="label">Primary Color</label>
+                  <input
+                    type="color"
+                    className="color-input"
+                    defaultValue="#8b5cf6"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="label">Secondary Color</label>
+                  <input
+                    type="color"
+                    className="color-input"
+                    defaultValue="#6366f1"
+                  />
+                </div>
+                <div className="form-group full-width">
+                  <label className="label">Logo</label>
+                  <div className="upload-area">
+                    <Upload size={24} />
+                    <p>Upload your logo (PNG, SVG)</p>
+                  </div>
+                </div>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="Custom Domain"
+              description="Use your own domain for the platform"
+            >
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label className="label">Custom Domain</label>
+                  <input
+                    type="text"
+                    className="input"
+                    placeholder="app.yourdomain.com"
+                  />
+                </div>
+                <div className="domain-status">
+                  <AlertCircle size={16} />
+                  <span>Add CNAME record: app.yourdomain.com → platform.techcorp.com</span>
+                </div>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
+      case 'audit':
+        return (
+          <>
+            <SettingsSection
+              title="Audit Log Settings"
+              description="Configure audit logging and retention"
+            >
+              <div className="form-grid">
+                <Switch
+                  label="Enable Audit Logging"
+                  checked={settings.auditLogging || true}
+                  onChange={(value) => handleSettingChange('auditLogging', value)}
+                />
+                <Switch
+                  label="Log API Calls"
+                  checked={settings.logApiCalls || true}
+                  onChange={(value) => handleSettingChange('logApiCalls', value)}
+                />
+                <div className="form-group">
+                  <label className="label">Log Retention (days)</label>
+                  <select className="select">
+                    <option>30 days</option>
+                    <option>60 days</option>
+                    <option>90 days</option>
+                    <option>180 days</option>
+                    <option>365 days</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="label">Export Format</label>
+                  <select className="select">
+                    <option>JSON</option>
+                    <option>CSV</option>
+                    <option>XML</option>
+                  </select>
+                </div>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="Recent Activity"
+              description="View recent system activity"
+            >
+              <div className="audit-log">
+                <div className="log-entry">
+                  <div className="log-icon success"><Check size={16} /></div>
+                  <div className="log-details">
+                    <h4>Settings Updated</h4>
+                    <p>John Doe updated system settings</p>
+                    <span className="log-time">2 minutes ago</span>
+                  </div>
+                </div>
+                <div className="log-entry">
+                  <div className="log-icon info"><Info size={16} /></div>
+                  <div className="log-details">
+                    <h4>User Login</h4>
+                    <p>Sarah Miller logged in from 192.168.1.1</p>
+                    <span className="log-time">15 minutes ago</span>
+                  </div>
+                </div>
+                <div className="log-entry">
+                  <div className="log-icon warning"><AlertCircle size={16} /></div>
+                  <div className="log-details">
+                    <h4>Failed Login Attempt</h4>
+                    <p>3 failed attempts from unknown IP</p>
+                    <span className="log-time">1 hour ago</span>
+                  </div>
+                </div>
+              </div>
+              <button className="view-all-btn">View All Logs</button>
+            </SettingsSection>
+          </>
+        );
+
+      case 'monitoring':
+        return (
+          <>
+            <SettingsSection
+              title="System Monitoring"
+              description="Configure monitoring and alerting"
+            >
+              <div className="monitoring-grid">
+                <div className="monitor-card">
+                  <div className="monitor-header">
+                    <Activity size={20} />
+                    <h4>Uptime</h4>
+                  </div>
+                  <div className="monitor-value">99.98%</div>
+                  <div className="monitor-detail">Last 30 days</div>
+                </div>
+                <div className="monitor-card">
+                  <div className="monitor-header">
+                    <Zap size={20} />
+                    <h4>Response Time</h4>
+                  </div>
+                  <div className="monitor-value">124ms</div>
+                  <div className="monitor-detail">Average</div>
+                </div>
+                <div className="monitor-card">
+                  <div className="monitor-header">
+                    <Database size={20} />
+                    <h4>Database</h4>
+                  </div>
+                  <div className="monitor-value">Healthy</div>
+                  <div className="monitor-detail">All systems operational</div>
+                </div>
+                <div className="monitor-card">
+                  <div className="monitor-header">
+                    <HardDrive size={20} />
+                    <h4>Storage</h4>
+                  </div>
+                  <div className="monitor-value">42%</div>
+                  <div className="monitor-detail">125GB / 300GB used</div>
+                </div>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="Alert Configuration"
+              description="Set up monitoring alerts"
+            >
+              <div className="alert-list">
+                <div className="alert-item">
+                  <div>
+                    <h4>High Response Time</h4>
+                    <p>Alert when response time exceeds 500ms</p>
+                  </div>
+                  <Switch checked={true} onChange={() => {}} />
+                </div>
+                <div className="alert-item">
+                  <div>
+                    <h4>Low Storage</h4>
+                    <p>Alert when storage exceeds 80%</p>
+                  </div>
+                  <Switch checked={true} onChange={() => {}} />
+                </div>
+                <div className="alert-item">
+                  <div>
+                    <h4>Error Rate</h4>
+                    <p>Alert when error rate exceeds 5%</p>
+                  </div>
+                  <Switch checked={false} onChange={() => {}} />
+                </div>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
+      case 'billing':
+        return (
+          <>
+            <SettingsSection
+              title="Current Plan"
+              description="Your subscription and usage details"
+            >
+              <div className="billing-plan">
+                <div className="plan-header">
+                  <h3>Enterprise Plan</h3>
+                  <span className="plan-price">$499/month</span>
+                </div>
+                <div className="plan-features">
+                  <div className="feature-item">
+                    <Check size={16} />
+                    <span>Unlimited users</span>
+                  </div>
+                  <div className="feature-item">
+                    <Check size={16} />
+                    <span>Advanced analytics</span>
+                  </div>
+                  <div className="feature-item">
+                    <Check size={16} />
+                    <span>Priority support</span>
+                  </div>
+                  <div className="feature-item">
+                    <Check size={16} />
+                    <span>Custom integrations</span>
+                  </div>
+                </div>
+                <div className="usage-stats">
+                  <div className="usage-item">
+                    <span>Contacts</span>
+                    <strong>45,231 / Unlimited</strong>
+                  </div>
+                  <div className="usage-item">
+                    <span>Emails Sent</span>
+                    <strong>892,451 / Unlimited</strong>
+                  </div>
+                  <div className="usage-item">
+                    <span>API Calls</span>
+                    <strong>1.2M / 5M</strong>
+                  </div>
+                </div>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="Payment Method"
+              description="Manage your payment information"
+            >
+              <div className="payment-method">
+                <div className="card-info">
+                  <CreditCard size={20} />
+                  <div>
+                    <h4>•••• •••• •••• 4242</h4>
+                    <p>Expires 12/25</p>
+                  </div>
+                </div>
+                <button className="update-payment-btn">Update Payment Method</button>
+              </div>
+              <div className="billing-actions">
+                <button className="billing-btn">
+                  <Download size={16} />
+                  Download Invoices
+                </button>
+                <button className="billing-btn">
+                  <FileText size={16} />
+                  Billing History
+                </button>
+              </div>
+            </SettingsSection>
+          </>
+        );
+
       default:
         return (
           <SettingsSection
@@ -353,10 +990,16 @@ export default function QuantumSettings() {
               <p className="header-subtitle">Manage your account and application preferences</p>
             </div>
           </div>
-          <button className="btn btn-primary" onClick={handleExportSettings}>
-            <Download size={16} />
-            Export Settings
-          </button>
+          <div className="header-actions">
+            <button className="btn" onClick={handleImportSettings}>
+              <Upload size={16} />
+              Import
+            </button>
+            <button className="btn btn-primary" onClick={handleExportSettings}>
+              <Download size={16} />
+              Export Settings
+            </button>
+          </div>
         </div>
       </header>
 
@@ -379,7 +1022,7 @@ export default function QuantumSettings() {
           <div
             key={tab.id}
             className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
           >
             {tab.label}
           </div>
@@ -397,7 +1040,10 @@ export default function QuantumSettings() {
           {/* Quick Actions */}
           <div className="quick-actions">
             <h3 className="quick-actions-title">Quick Actions</h3>
-            <button className="quick-action-btn" onClick={showSaveStatus}>
+            <button className="quick-action-btn" onClick={() => {
+              showSaveStatus();
+              showToast('All changes saved successfully', 'success');
+            }}>
               <Save size={16} />
               Save All Changes
             </button>
@@ -405,7 +1051,7 @@ export default function QuantumSettings() {
               <RotateCcw size={16} />
               Reset to Defaults
             </button>
-            <button className="quick-action-btn">
+            <button className="quick-action-btn" onClick={handleViewChangelog}>
               <FileText size={16} />
               View Changelog
             </button>
@@ -463,6 +1109,108 @@ export default function QuantumSettings() {
         </div>
         <span className="save-status-text">Settings saved successfully</span>
       </div>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`settings-toast ${toastMessage.type}`}>
+          <div className="toast-content">
+            {toastMessage.type === 'success' && <Check size={18} />}
+            {toastMessage.type === 'error' && <AlertCircle size={18} />}
+            {toastMessage.type === 'info' && <Info size={18} />}
+            <span>{toastMessage.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Changelog Modal */}
+      {showChangelogModal && (
+        <div className="settings-modal-overlay" onClick={() => setShowChangelogModal(false)}>
+          <div className="settings-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Changelog</h3>
+              <button onClick={() => setShowChangelogModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="changelog-entry">
+                <h4>Version 2.4.0</h4>
+                <p className="changelog-date">Released on December 15, 2024</p>
+                <ul className="changelog-list">
+                  <li>Added Quantum UI design system</li>
+                  <li>Improved AI predictions accuracy by 34%</li>
+                  <li>New campaign templates library</li>
+                  <li>Enhanced security with 2FA support</li>
+                </ul>
+              </div>
+              <div className="changelog-entry">
+                <h4>Version 2.3.0</h4>
+                <p className="changelog-date">Released on November 28, 2024</p>
+                <ul className="changelog-list">
+                  <li>Multi-channel campaign support</li>
+                  <li>Advanced analytics dashboard</li>
+                  <li>API rate limit configuration</li>
+                  <li>Performance improvements</li>
+                </ul>
+              </div>
+              <div className="changelog-entry">
+                <h4>Version 2.2.0</h4>
+                <p className="changelog-date">Released on October 15, 2024</p>
+                <ul className="changelog-list">
+                  <li>White label customization</li>
+                  <li>Audit logging system</li>
+                  <li>New integrations added</li>
+                  <li>Bug fixes and stability improvements</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Settings Modal */}
+      {showImportModal && (
+        <div className="settings-modal-overlay" onClick={() => setShowImportModal(false)}>
+          <div className="settings-modal compact" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Import Settings</h3>
+              <button onClick={() => setShowImportModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-content">
+              <div className="import-area">
+                <Upload size={48} />
+                <h4>Drop your settings file here</h4>
+                <p>or click to browse</p>
+                <input 
+                  type="file" 
+                  accept=".json" 
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      // In a real app, you'd parse and apply the settings
+                      setShowImportModal(false);
+                      showToast('Settings imported successfully', 'success');
+                    }
+                  }}
+                />
+              </div>
+              <button 
+                className="settings-button primary"
+                onClick={() => {
+                  const input = document.querySelector('input[type="file"]');
+                  input?.click();
+                }}
+              >
+                <Upload size={16} />
+                Select File
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .quantum-settings {
@@ -557,6 +1305,11 @@ export default function QuantumSettings() {
         .header-subtitle {
           color: rgba(255, 255, 255, 0.6);
           font-size: 0.875rem;
+        }
+
+        .header-actions {
+          display: flex;
+          gap: 0.75rem;
         }
 
         .btn {
@@ -1095,6 +1848,848 @@ export default function QuantumSettings() {
             flex-direction: column;
             align-items: flex-start;
           }
+        }
+
+        /* Toast Styles */
+        .settings-toast {
+          position: fixed;
+          bottom: 2rem;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(26, 26, 46, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 1rem 1.5rem;
+          animation: slideUp 0.3s ease;
+          z-index: 1000;
+        }
+
+        .toast-content {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          color: white;
+        }
+
+        .settings-toast.success {
+          border-color: rgba(16, 185, 129, 0.3);
+          background: rgba(16, 185, 129, 0.1);
+        }
+
+        .settings-toast.error {
+          border-color: rgba(239, 68, 68, 0.3);
+          background: rgba(239, 68, 68, 0.1);
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translate(-50%, 100%);
+            opacity: 0;
+          }
+          to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+          }
+        }
+
+        /* Modal Styles */
+        .settings-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(10px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 999;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .settings-modal {
+          background: rgba(26, 26, 46, 0.95);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 20px;
+          width: 90%;
+          max-width: 600px;
+          max-height: 90vh;
+          overflow: hidden;
+          animation: scaleIn 0.3s ease;
+        }
+
+        .settings-modal.compact {
+          max-width: 400px;
+        }
+
+        .modal-header {
+          padding: 1.5rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .modal-header h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+
+        .modal-header button {
+          background: none;
+          border: none;
+          color: rgba(255, 255, 255, 0.6);
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .modal-header button:hover {
+          color: white;
+        }
+
+        .modal-content {
+          padding: 1.5rem;
+          overflow-y: auto;
+          max-height: calc(90vh - 80px);
+        }
+
+        /* Changelog Styles */
+        .changelog-entry {
+          margin-bottom: 2rem;
+          padding-bottom: 2rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .changelog-entry:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
+          padding-bottom: 0;
+        }
+
+        .changelog-entry h4 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: #8b5cf6;
+        }
+
+        .changelog-date {
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.5);
+          margin-bottom: 1rem;
+        }
+
+        .changelog-list {
+          list-style: none;
+          padding: 0;
+        }
+
+        .changelog-list li {
+          position: relative;
+          padding-left: 1.5rem;
+          margin-bottom: 0.5rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+        }
+
+        .changelog-list li:before {
+          content: '•';
+          position: absolute;
+          left: 0;
+          color: #8b5cf6;
+        }
+
+        /* Import Area */
+        .import-area {
+          background: rgba(255, 255, 255, 0.03);
+          border: 2px dashed rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 3rem;
+          text-align: center;
+          margin-bottom: 1.5rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .import-area:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .import-area svg {
+          color: rgba(255, 255, 255, 0.3);
+          margin-bottom: 1rem;
+        }
+
+        .import-area h4 {
+          font-size: 1rem;
+          margin-bottom: 0.5rem;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .import-area p {
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        .settings-button {
+          padding: 0.75rem 1.5rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .settings-button:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: white;
+        }
+
+        .settings-button.primary {
+          background: linear-gradient(135deg, #8b5cf6, #6366f1);
+          border: none;
+          color: white;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .settings-button.primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+          from {
+            transform: scale(0.9);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+
+        /* Users Section */
+        .users-grid {
+          display: grid;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .user-card {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          transition: all 0.2s;
+        }
+
+        .user-card:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+          width: 48px;
+          height: 48px;
+          background: linear-gradient(135deg, #8b5cf6, #6366f1);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          color: white;
+        }
+
+        .user-info {
+          flex: 1;
+        }
+
+        .user-info h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .user-info p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+          display: inline-block;
+          padding: 0.125rem 0.5rem;
+          background: rgba(139, 92, 246, 0.1);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          border-radius: 4px;
+          font-size: 0.75rem;
+          color: #a78bfa;
+        }
+
+        .user-action {
+          padding: 0.375rem 0.75rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.8125rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .user-action:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+        }
+
+        .add-user-btn {
+          width: 100%;
+          padding: 0.75rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.875rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          transition: all 0.2s;
+        }
+
+        .add-user-btn:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+          border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .roles-list {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .role-item {
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          transition: all 0.2s;
+        }
+
+        .role-item:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .role-item h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .role-item p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 0.5rem;
+        }
+
+        .user-count {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Compliance Section */
+        .compliance-actions {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+
+        .compliance-btn {
+          padding: 0.75rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.875rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.2s;
+        }
+
+        .compliance-btn:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+        }
+
+        /* Notifications Section */
+        .notification-list {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .notification-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+        }
+
+        .notification-item h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .notification-item p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Integrations Section */
+        .integrations-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .integration-card {
+          padding: 1.5rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          text-align: center;
+          transition: all 0.2s;
+        }
+
+        .integration-card:hover {
+          transform: translateY(-2px);
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .integration-card.connected {
+          border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .integration-icon {
+          width: 48px;
+          height: 48px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 1rem;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .integration-card h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .integration-card p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 0.75rem;
+        }
+
+        .integration-btn {
+          padding: 0.375rem 0.75rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.8125rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .integration-btn:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+        }
+
+        .integration-btn.primary {
+          background: #8b5cf6;
+          border-color: #8b5cf6;
+          color: white;
+        }
+
+        .api-section {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .api-key-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+        }
+
+        .api-key-item h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .api-key {
+          font-family: monospace;
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .api-action {
+          padding: 0.375rem 0.75rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.8125rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        /* White Label Section */
+        .color-input {
+          width: 100%;
+          height: 40px;
+          padding: 0.25rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        .upload-area {
+          padding: 2rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 2px dashed rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .upload-area:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .upload-area svg {
+          color: rgba(255, 255, 255, 0.3);
+          margin-bottom: 0.5rem;
+        }
+
+        .upload-area p {
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        .domain-status {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem;
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          border-radius: 6px;
+          color: #f59e0b;
+          font-size: 0.8125rem;
+        }
+
+        /* Audit Section */
+        .audit-log {
+          display: grid;
+          gap: 0.75rem;
+          margin-bottom: 1rem;
+        }
+
+        .log-entry {
+          display: flex;
+          gap: 1rem;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+        }
+
+        .log-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .log-icon.success {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+        }
+
+        .log-icon.info {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        }
+
+        .log-icon.warning {
+          background: rgba(245, 158, 11, 0.1);
+          color: #f59e0b;
+        }
+
+        .log-details h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .log-details p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+          margin-bottom: 0.25rem;
+        }
+
+        .log-time {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        .view-all-btn {
+          width: 100%;
+          padding: 0.5rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        /* Monitoring Section */
+        .monitoring-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .monitor-card {
+          padding: 1.25rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          text-align: center;
+        }
+
+        .monitor-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .monitor-header h4 {
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        .monitor-value {
+          font-size: 1.75rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+          color: #10b981;
+        }
+
+        .monitor-detail {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        .alert-list {
+          display: grid;
+          gap: 0.75rem;
+        }
+
+        .alert-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+        }
+
+        .alert-item h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .alert-item p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Billing Section */
+        .billing-plan {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          padding: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .plan-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .plan-header h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+
+        .plan-price {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #8b5cf6;
+        }
+
+        .plan-features {
+          display: grid;
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .feature-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.875rem;
+        }
+
+        .feature-item svg {
+          color: #10b981;
+        }
+
+        .usage-stats {
+          display: grid;
+          gap: 0.75rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .usage-item {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.875rem;
+        }
+
+        .usage-item span {
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .usage-item strong {
+          color: white;
+        }
+
+        .payment-method {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          padding: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .card-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .card-info h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .card-info p {
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .update-payment-btn {
+          width: 100%;
+          padding: 0.5rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .billing-actions {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+
+        .billing-btn {
+          padding: 0.75rem;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.875rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          transition: all 0.2s;
+        }
+
+        .billing-btn:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
         }
       `}</style>
     </div>

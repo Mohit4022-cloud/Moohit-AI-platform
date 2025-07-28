@@ -257,7 +257,7 @@ const LeadScoreVisualizer = ({ score, factors }) => {
 };
 
 // Enhanced Lead Card
-const QuantumLeadCard = ({ lead, isSelected, onSelect, onAction, showDetails }) => {
+const QuantumLeadCard = ({ lead, isSelected, onSelect, onAction, showDetails, showToast }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const scoringEngine = useMemo(() => new LeadScoringEngine(), []);
@@ -420,7 +420,10 @@ const QuantumLeadCard = ({ lead, isSelected, onSelect, onAction, showDetails }) 
                     {score.nextBestAction.action.replace('_', ' ')}
                   </div>
                 </div>
-                <button className="recommendation-action">
+                <button className="recommendation-action" onClick={() => {
+                  onAction(score.nextBestAction.action, lead);
+                  showToast(`Executing: ${score.nextBestAction.action.replace('_', ' ')}`, 'info');
+                }}>
                   Execute
                   <ArrowUpRight size={14} />
                 </button>
@@ -646,6 +649,25 @@ const AdvancedFilters = ({ onApply, isOpen }) => {
 // Main Leads Page Component
 export default function QuantumLeadsPage() {
   const navigate = useNavigate();
+  
+  // Toast notification state
+  const [toastMessage, setToastMessage] = useState(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false);
+  const [showSaveViewModal, setShowSaveViewModal] = useState(false);
+  const [showRoutingModal, setShowRoutingModal] = useState(false);
+  const [showBulkAssignModal, setShowBulkAssignModal] = useState(false);
+  const [showBulkTagModal, setShowBulkTagModal] = useState(false);
+  const [showBulkStatusModal, setShowBulkStatusModal] = useState(false);
+  const [showSequenceModal, setShowSequenceModal] = useState(false);
+  
+  // Toast helper
+  const showToast = (message, type = 'info') => {
+    setToastMessage({ message, type });
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+  
   const [leads, setLeads] = useState([
     {
       id: 1,
@@ -741,15 +763,105 @@ export default function QuantumLeadsPage() {
   };
   
   const handleBulkAction = (action) => {
-    console.log('Bulk action:', action, 'on leads:', Array.from(selectedLeads));
+    switch(action) {
+      case 'assign':
+        setShowBulkAssignModal(true);
+        showToast(`Assigning ${selectedLeads.size} leads...`, 'info');
+        break;
+      case 'tag':
+        setShowBulkTagModal(true);
+        showToast(`Tagging ${selectedLeads.size} leads...`, 'info');
+        break;
+      case 'status':
+        setShowBulkStatusModal(true);
+        showToast(`Updating status for ${selectedLeads.size} leads...`, 'info');
+        break;
+      case 'export':
+        showToast(`Exporting ${selectedLeads.size} leads...`, 'info');
+        setTimeout(() => showToast('Export completed!', 'success'), 1500);
+        break;
+      case 'sequence':
+        setShowSequenceModal(true);
+        showToast(`Adding ${selectedLeads.size} leads to sequence...`, 'info');
+        break;
+    }
   };
   
   const handleLeadAction = (action, lead) => {
-    console.log('Lead action:', action, 'on lead:', lead);
+    switch(action) {
+      case 'call':
+        showToast(`Initiating call to ${lead.name}...`, 'info');
+        setTimeout(() => showToast('Call connected!', 'success'), 1500);
+        break;
+      case 'email':
+        showToast(`Opening email composer for ${lead.name}...`, 'info');
+        break;
+      case 'chat':
+        showToast(`Starting chat with ${lead.name}...`, 'info');
+        break;
+      case 'schedule':
+        showToast(`Opening calendar for ${lead.name}...`, 'info');
+        break;
+    }
   };
   
   const handleAIAction = (action) => {
-    console.log('AI action:', action);
+    switch(action) {
+      case 'view_hot_leads':
+        showToast('Filtering hot leads...', 'info');
+        setSortBy('score_desc');
+        break;
+      case 'view_stale_leads':
+        showToast('Finding stale leads...', 'info');
+        break;
+      case 'filter_tech':
+        showToast('Filtering tech companies...', 'info');
+        break;
+    }
+  };
+  
+  // Header button handlers
+  const handleSaveView = () => {
+    setShowSaveViewModal(true);
+    showToast('Opening save view dialog...', 'info');
+  };
+  
+  const handleImport = () => {
+    setShowImportModal(true);
+    showToast('Opening import wizard...', 'info');
+  };
+  
+  const handleExport = () => {
+    setShowExportModal(true);
+    showToast('Preparing export...', 'info');
+  };
+  
+  const handleAddLead = () => {
+    setShowAddLeadModal(true);
+    showToast('Opening lead creation form...', 'info');
+  };
+  
+  const handleLeadRouting = () => {
+    setShowRoutingModal(true);
+    showToast('Configuring lead routing rules...', 'info');
+  };
+  
+  const handleBehavioralScoring = () => {
+    showToast('Analyzing behavioral patterns...', 'info');
+    setTimeout(() => showToast('Behavioral scoring updated!', 'success'), 2000);
+  };
+  
+  const handleRefresh = () => {
+    showToast('Refreshing leads...', 'info');
+    setTimeout(() => {
+      showToast('Leads refreshed!', 'success');
+      // Could trigger actual data refresh here
+    }, 1000);
+  };
+  
+  const handleSettings = () => {
+    showToast('Opening lead settings...', 'info');
+    navigate('/settings?tab=leads');
   };
   
   const filteredLeads = useMemo(() => {
@@ -803,19 +915,19 @@ export default function QuantumLeadsPage() {
           </div>
           
           <div className="header-actions">
-            <button className="header-button secondary">
+            <button className="header-button secondary" onClick={handleSaveView}>
               <Star size={16} />
               Save View
             </button>
-            <button className="header-button secondary">
+            <button className="header-button secondary" onClick={handleImport}>
               <Upload size={16} />
               Import
             </button>
-            <button className="header-button secondary">
+            <button className="header-button secondary" onClick={handleExport}>
               <Download size={16} />
               Export
             </button>
-            <button className="header-button primary">
+            <button className="header-button primary" onClick={handleAddLead}>
               <Plus size={16} />
               Add Lead
             </button>
@@ -898,7 +1010,7 @@ export default function QuantumLeadsPage() {
             <option value="probability">Conversion Probability</option>
           </select>
           
-          <button className="routing-button">
+          <button className="routing-button" onClick={handleLeadRouting}>
             <GitBranch size={16} />
             Lead Routing
           </button>
@@ -929,14 +1041,14 @@ export default function QuantumLeadsPage() {
             </div>
             
             <div className="list-actions">
-              <button className="behavioral-scoring-toggle">
+              <button className="behavioral-scoring-toggle" onClick={handleBehavioralScoring}>
                 <Activity size={16} />
                 Behavioral Scoring
               </button>
-              <button className="refresh-button">
+              <button className="refresh-button" onClick={handleRefresh}>
                 <RefreshCw size={16} />
               </button>
-              <button className="settings-button">
+              <button className="settings-button" onClick={handleSettings}>
                 <Settings size={16} />
               </button>
             </div>
@@ -976,6 +1088,7 @@ export default function QuantumLeadsPage() {
                 onSelect={handleSelectLead}
                 onAction={handleLeadAction}
                 showDetails={true}
+                showToast={showToast}
               />
             ))}
           </div>
@@ -2322,6 +2435,664 @@ export default function QuantumLeadsPage() {
         @keyframes rotate {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+      `}</style>
+      
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`quantum-toast toast-${toastMessage.type}`}>
+          {toastMessage.type === 'success' && <CheckCircle size={16} />}
+          {toastMessage.type === 'info' && <AlertCircle size={16} />}
+          {toastMessage.type === 'error' && <AlertCircle size={16} />}
+          <span>{toastMessage.message}</span>
+        </div>
+      )}
+      
+      {/* Add Lead Modal */}
+      {showAddLeadModal && (
+        <div className="quantum-modal-overlay" onClick={() => setShowAddLeadModal(false)}>
+          <div className="quantum-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3><Plus size={24} /> Add New Lead</h3>
+              <button className="modal-close" onClick={() => setShowAddLeadModal(false)}>
+                ×
+              </button>
+            </div>
+            <div className="modal-form">
+              <div className="form-group">
+                <label>Name</label>
+                <input type="text" placeholder="Enter lead name" />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="Enter email address" />
+              </div>
+              <div className="form-group">
+                <label>Company</label>
+                <input type="text" placeholder="Enter company name" />
+              </div>
+              <div className="form-actions">
+                <button className="modal-button secondary" onClick={() => setShowAddLeadModal(false)}>
+                  Cancel
+                </button>
+                <button className="modal-button primary" onClick={() => {
+                  showToast('Lead created successfully!', 'success');
+                  setShowAddLeadModal(false);
+                }}>
+                  Create Lead
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="quantum-modal-overlay" onClick={() => setShowImportModal(false)}>
+          <div className="quantum-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3><Upload size={24} /> Import Leads</h3>
+              <button className="modal-close" onClick={() => setShowImportModal(false)}>
+                ×
+              </button>
+            </div>
+            <div className="import-zone">
+              <Upload size={48} />
+              <h4>Drop your CSV file here</h4>
+              <p>or click to browse</p>
+              <button className="browse-button">Choose File</button>
+            </div>
+            <div className="import-info">
+              <p>Supported formats: CSV, Excel</p>
+              <p>Maximum file size: 10MB</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Export Modal */}
+      {showExportModal && (
+        <div className="quantum-modal-overlay" onClick={() => setShowExportModal(false)}>
+          <div className="quantum-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3><Download size={24} /> Export Leads</h3>
+              <button className="modal-close" onClick={() => setShowExportModal(false)}>
+                ×
+              </button>
+            </div>
+            <div className="export-options">
+              <button className="export-option" onClick={() => {
+                showToast('Exporting as CSV...', 'info');
+                setTimeout(() => {
+                  showToast('Export completed!', 'success');
+                  setShowExportModal(false);
+                }, 1500);
+              }}>
+                <Download size={24} />
+                <span>Export as CSV</span>
+              </button>
+              <button className="export-option" onClick={() => {
+                showToast('Exporting as Excel...', 'info');
+                setTimeout(() => {
+                  showToast('Export completed!', 'success');
+                  setShowExportModal(false);
+                }, 1500);
+              }}>
+                <Download size={24} />
+                <span>Export as Excel</span>
+              </button>
+              <button className="export-option" onClick={() => {
+                showToast('Generating PDF...', 'info');
+                setTimeout(() => {
+                  showToast('PDF generated!', 'success');
+                  setShowExportModal(false);
+                }, 2000);
+              }}>
+                <Download size={24} />
+                <span>Export as PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Save View Modal */}
+      {showSaveViewModal && (
+        <div className="quantum-modal-overlay" onClick={() => setShowSaveViewModal(false)}>
+          <div className="quantum-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3><Star size={24} /> Save Current View</h3>
+              <button className="modal-close" onClick={() => setShowSaveViewModal(false)}>
+                ×
+              </button>
+            </div>
+            <div className="modal-form">
+              <div className="form-group">
+                <label>View Name</label>
+                <input type="text" placeholder="Enter view name" />
+              </div>
+              <div className="form-group">
+                <label>Description</label>
+                <textarea placeholder="Optional description"></textarea>
+              </div>
+              <div className="save-options">
+                <label>
+                  <input type="checkbox" defaultChecked />
+                  Save current filters
+                </label>
+                <label>
+                  <input type="checkbox" defaultChecked />
+                  Save sort preferences
+                </label>
+                <label>
+                  <input type="checkbox" />
+                  Make default view
+                </label>
+              </div>
+              <div className="form-actions">
+                <button className="modal-button secondary" onClick={() => setShowSaveViewModal(false)}>
+                  Cancel
+                </button>
+                <button className="modal-button primary" onClick={() => {
+                  showToast('View saved successfully!', 'success');
+                  setShowSaveViewModal(false);
+                }}>
+                  Save View
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Lead Routing Modal */}
+      {showRoutingModal && (
+        <div className="quantum-modal-overlay" onClick={() => setShowRoutingModal(false)}>
+          <div className="quantum-modal-content routing-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3><GitBranch size={24} /> Lead Routing Rules</h3>
+              <button className="modal-close" onClick={() => setShowRoutingModal(false)}>
+                ×
+              </button>
+            </div>
+            <div className="routing-rules">
+              <div className="rule-item">
+                <div className="rule-header">
+                  <h4>High-Value Leads</h4>
+                  <span className="rule-status active">Active</span>
+                </div>
+                <p>Score &gt; 85 → Route to Senior Sales Team</p>
+              </div>
+              <div className="rule-item">
+                <div className="rule-header">
+                  <h4>Enterprise Leads</h4>
+                  <span className="rule-status active">Active</span>
+                </div>
+                <p>Company Size &gt; 1000 → Route to Enterprise Team</p>
+              </div>
+              <div className="rule-item">
+                <div className="rule-header">
+                  <h4>Technical Leads</h4>
+                  <span className="rule-status">Inactive</span>
+                </div>
+                <p>Title contains "CTO" or "Engineer" → Route to Technical Sales</p>
+              </div>
+            </div>
+            <button className="add-rule-button">
+              <Plus size={16} />
+              Add New Rule
+            </button>
+          </div>
+        </div>
+      )}
+      
+      <style jsx>{`
+        /* Toast Styles */
+        .quantum-toast {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          padding: 1rem 1.5rem;
+          background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(16, 16, 30, 0.95) 100%);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          color: white;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          box-shadow: 
+            0 10px 40px rgba(0, 0, 0, 0.3),
+            0 0 40px rgba(139, 92, 246, 0.1);
+          animation: toastSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 10000;
+          backdrop-filter: blur(10px);
+        }
+        
+        .quantum-toast.toast-success {
+          border-left: 4px solid #10b981;
+        }
+        
+        .quantum-toast.toast-info {
+          border-left: 4px solid #3b82f6;
+        }
+        
+        .quantum-toast.toast-error {
+          border-left: 4px solid #ef4444;
+        }
+        
+        @keyframes toastSlideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        /* Modal Styles */
+        .quantum-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.85);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          backdrop-filter: blur(20px);
+          animation: fadeIn 0.2s ease-out;
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        .quantum-modal-content {
+          background: linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(16, 16, 30, 0.98) 100%);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          border-radius: 24px;
+          padding: 2.5rem;
+          max-width: 600px;
+          width: 90%;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.5),
+            0 0 100px rgba(139, 92, 246, 0.1),
+            inset 0 0 60px rgba(139, 92, 246, 0.05);
+          animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+        }
+        
+        .quantum-modal-content::before {
+          content: '';
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          right: -2px;
+          bottom: -2px;
+          background: linear-gradient(45deg, #8b5cf6, #3b82f6, #8b5cf6);
+          border-radius: 24px;
+          opacity: 0.5;
+          z-index: -1;
+          animation: modalGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes modalGlow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+        
+        @keyframes modalSlideIn {
+          from {
+            transform: translateY(-50px) scale(0.95);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+        }
+        
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+        }
+        
+        .modal-header h3 {
+          margin: 0;
+          color: white;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 1.5rem;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+        
+        .modal-close {
+          background: transparent;
+          border: none;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 2rem;
+          line-height: 1;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          border-radius: 50%;
+          transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          transform: rotate(90deg);
+        }
+        
+        /* Form Styles */
+        .modal-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+        
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        
+        .form-group label {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-group input,
+        .form-group textarea {
+          padding: 0.875rem 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          color: white;
+          font-size: 0.875rem;
+          transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+          outline: none;
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(139, 92, 246, 0.5);
+          box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+        
+        .form-group textarea {
+          min-height: 100px;
+          resize: vertical;
+        }
+        
+        .form-actions {
+          display: flex;
+          gap: 0.75rem;
+          justify-content: flex-end;
+          margin-top: 1rem;
+        }
+        
+        .modal-button {
+          padding: 0.875rem 1.5rem;
+          border-radius: 12px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+        }
+        
+        .modal-button.secondary {
+          background: rgba(255, 255, 255, 0.05);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-button.secondary:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: white;
+        }
+        
+        .modal-button.primary {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.3) 100%);
+          color: white;
+          border: 1px solid rgba(139, 92, 246, 0.4);
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .modal-button.primary::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s;
+        }
+        
+        .modal-button.primary:hover {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.4) 0%, rgba(59, 130, 246, 0.4) 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .modal-button.primary:hover::before {
+          left: 100%;
+        }
+        
+        /* Import Zone */
+        .import-zone {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          padding: 3rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 2px dashed rgba(139, 92, 246, 0.3);
+          border-radius: 16px;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        
+        .import-zone:hover {
+          background: rgba(139, 92, 246, 0.05);
+          border-color: rgba(139, 92, 246, 0.5);
+        }
+        
+        .import-zone h4 {
+          margin: 0;
+          font-size: 1.125rem;
+          font-weight: 600;
+        }
+        
+        .import-zone p {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .browse-button {
+          margin-top: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          background: rgba(139, 92, 246, 0.2);
+          border: 1px solid rgba(139, 92, 246, 0.4);
+          border-radius: 8px;
+          color: white;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        
+        .browse-button:hover {
+          background: rgba(139, 92, 246, 0.3);
+          transform: translateY(-2px);
+        }
+        
+        .import-info {
+          margin-top: 1rem;
+          text-align: center;
+        }
+        
+        .import-info p {
+          margin: 0.25rem 0;
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Export Options */
+        .export-options {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+        }
+        
+        .export-option {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 2rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        
+        .export-option:hover {
+          background: rgba(139, 92, 246, 0.1);
+          border-color: rgba(139, 92, 246, 0.3);
+          transform: translateY(-4px);
+          box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+        }
+        
+        .export-option span {
+          font-size: 0.875rem;
+          font-weight: 600;
+        }
+        
+        /* Save Options */
+        .save-options {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 12px;
+        }
+        
+        .save-options label {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 0.875rem;
+          cursor: pointer;
+        }
+        
+        .save-options input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        }
+        
+        /* Routing Modal */
+        .routing-modal {
+          max-width: 700px;
+        }
+        
+        .routing-rules {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+        
+        .rule-item {
+          padding: 1.25rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          transition: all 0.3s;
+        }
+        
+        .rule-item:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(139, 92, 246, 0.2);
+        }
+        
+        .rule-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+        
+        .rule-header h4 {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 600;
+        }
+        
+        .rule-status {
+          padding: 0.25rem 0.75rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .rule-status.active {
+          background: rgba(16, 185, 129, 0.2);
+          color: #10b981;
+        }
+        
+        .rule-item p {
+          margin: 0;
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .add-rule-button {
+          width: 100%;
+          padding: 1rem;
+          background: rgba(139, 92, 246, 0.1);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          border-radius: 12px;
+          color: hsl(270, 70%, 70%);
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        
+        .add-rule-button:hover {
+          background: rgba(139, 92, 246, 0.2);
+          transform: translateY(-2px);
         }
       `}</style>
     </div>
